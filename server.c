@@ -7,15 +7,6 @@
 
 #define MAXBUFLEN 100
 
-/* Returns in_addr for IPv4 or IPv6 */
-void *get_in_addr(struct sockaddr *sa) {
-    if (sa->sa_family == AF_INET) {
-        return &(((struct sockaddr_in*)sa)->sin_addr);
-    } else {
-        return &(((struct sockaddr_in6*)sa)->sin6_addr);
-    }
-}
-
 int main(int argc, char **argv) {
     int sockfd;
     int rv;
@@ -67,21 +58,23 @@ int main(int argc, char **argv) {
     socklen_t addr_len = sizeof client_addr;
     char buffer[MAXBUFLEN];
     char address[INET6_ADDRSTRLEN];
+    unsigned short port;
     int numbytes;
 
-    if ((numbytes = recvfrom(sockfd, buffer, MAXBUFLEN-1 , 0,
-        (struct sockaddr *)&client_addr, &addr_len)) == -1) {
-        perror("recvfrom");
-        exit(102);
-    }
+    while (1) {
+        if ((numbytes = recvfrom(sockfd, buffer, MAXBUFLEN-1 , 0,
+            (struct sockaddr *)&client_addr, &addr_len)) == -1) {
+            perror("recvfrom");
+            exit(102);
+        }
 
-    printf("Received from %s\n",
-        inet_ntop(client_addr.ss_family,
-            get_in_addr((struct sockaddr *)&client_addr),
-            address, sizeof address));
-    printf("packet is %d bytes long\n", numbytes);
-    buffer[numbytes] = '\0';
-    printf("packet contains: \"%s\"\n", buffer);
+        get_address((struct sockaddr *) &client_addr, address);
+        port = get_port((struct sockaddr *) &client_addr);
+        printf("Received from %s port: %d\n", address, port);
+        printf("packet is %d bytes long\n", numbytes);
+        buffer[numbytes] = '\0';
+        printf("packet contains: \"%s\"\n", buffer);
+    }
 
     close(sockfd);
 

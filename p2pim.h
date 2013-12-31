@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -10,18 +11,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <pthread.h>
 
 #define SERVER_PORT "5000"
 
-struct Location {
-    char address[INET6_ADDRSTRLEN];
-    unsigned short port;
-};
-
-struct Client {
-    struct Location private_addr;
-    struct Location public_addr;
-};
-
+unsigned int current_time();
 void get_address(struct sockaddr *sa, char *address);
 unsigned short get_port(struct sockaddr *sa);
+
+char* strdup(const char *s);

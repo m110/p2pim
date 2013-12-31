@@ -4,8 +4,42 @@
  */
 
 #include "p2pim.h"
+#include "structs.h"
 
 #define MAXBUFLEN 100
+
+pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void* cleanup_clients(void *_list) {
+    Client **list = (Client **) _list;
+
+    const unsigned int interval = 1;
+    const unsigned int duration = 5;
+    unsigned int time = current_time();
+
+    while (1) {
+        if (current_time() - time < interval) {
+            continue;
+        }
+
+        Client *prev = *list;
+        for (Client *c = *list; c != NULL; c = c->next) {
+            printf("Hello, : %s\n", c->id);
+            if (current_time() - c->time > duration) {
+                pthread_mutex_lock(&clients_mutex);
+                delete_client(list, c);
+                pthread_mutex_unlock(&clients_mutex);
+
+                if (prev != NULL) {
+                    c = prev;
+                }
+            }
+            prev = c;
+        }
+
+        time = current_time();
+    }
+}
 
 int main(int argc, char **argv) {
     int sockfd;
@@ -49,8 +83,14 @@ int main(int argc, char **argv) {
     freeaddrinfo(servinfo);
 
     /*
-     * Waiting for connections
+     * Connection ready.
      */
+
+    /* Linked list of clients. */
+    Client *clients = NULL;
+
+    pthread_t cleanup_thread;
+    pthread_create(&cleanup_thread, NULL, cleanup_clients, (void*) &clients);
 
     printf("Server ready, waiting for connections...\n");
 
@@ -74,7 +114,11 @@ int main(int argc, char **argv) {
         printf("packet is %d bytes long\n", numbytes);
         buffer[numbytes] = '\0';
         printf("packet contains: \"%s\"\n", buffer);
+
+        add_client(&clients, buffer);
     }
+
+    pthread_join(cleanup_thread, NULL);
 
     close(sockfd);
 

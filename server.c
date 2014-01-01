@@ -22,19 +22,16 @@ void* cleanup_clients(void *_list) {
             continue;
         }
 
-        Client *prev = *list;
-        for (Client *c = *list; c != NULL; c = c->next) {
-            printf("Hello, : %s\n", c->id);
+        Client *c = *list;
+        while (c != NULL) {
+            Client *next = c->next;
             if (current_time() - c->time > duration) {
                 pthread_mutex_lock(&clients_mutex);
                 delete_client(list, c);
                 pthread_mutex_unlock(&clients_mutex);
-
-                if (prev != NULL) {
-                    c = prev;
-                }
             }
-            prev = c;
+
+            c = next;
         }
 
         time = current_time();

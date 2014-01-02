@@ -5,6 +5,13 @@ unsigned int current_time() {
     return (unsigned int) time(NULL);
 }
 
+/* String duplicate */
+char* strdup (const char *s) {
+    char *d = malloc(strlen(s) + 1);
+    if (d != NULL) strcpy (d, s);
+    return d;
+}
+
 /* Get IP address from sockadd struct */
 void get_address(struct sockaddr *sa, char *address) {
     if (sa->sa_family == AF_INET) {
@@ -25,9 +32,127 @@ unsigned short get_port(struct sockaddr *sa) {
     }
 }
 
-char* strdup (const char *s) {
-    char *d = malloc (strlen (s) + 1);
-    if (d != NULL) strcpy (d,s);
-    return d;
+/* Bind UDP socket on local host */
+int udp_bind(const char *port, struct addrinfo **conninfo) {
+    int sockfd, rv;
+    struct addrinfo *servinfo;
+
+    /* Initialize hints structure */
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags = AI_PASSIVE;
+
+    if ((rv = getaddrinfo(NULL, port, &hints, &servinfo)) != 0) {
+        fprintf(stderr, "udp_bind getaddrinfo: %s\n", gai_strerror(rv));
+        exit(100);
+    }
+
+    /* Loop through results and bind if possible */
+    struct addrinfo *p;
+    for (p = servinfo; p != NULL; p = p->ai_next) {
+        if ((sockfd = socket(p->ai_family, p->ai_socktype,
+                p->ai_protocol)) == -1) {
+            perror("udp_bind socket");
+            continue;
+        }
+
+        if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+            close(sockfd);
+            perror("udp_bind");
+            continue;
+        }
+
+        break;
+    }
+
+    if (p == NULL) {
+        fprintf(stderr, "udp_bind: Failed to bind a socket!\n");
+        exit(101);
+    }
+
+    freeaddrinfo(servinfo);
+
+    *conninfo = p;
+    return sockfd;
 }
 
+/* Get given UDP socket */
+int udp_connect(const char *host, const char *port, struct addrinfo **conninfo) {
+    int sockfd, rv;
+    struct addrinfo *servinfo;
+
+    /* Initialize hints structure */
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_DGRAM;
+
+    if ((rv = getaddrinfo(host, port, &hints, &servinfo)) != 0) {
+        fprintf(stderr, "udp_connect getaddrinfo: %s\n", gai_strerror(rv));
+        exit(200);
+    }
+
+    /* Loop through results and create a socket */
+    struct addrinfo *p;
+    for (p = servinfo; p != NULL; p = p->ai_next) {
+        if ((sockfd = socket(p->ai_family, p->ai_socktype,
+                p->ai_protocol)) == -1) {
+            perror("udp_connect socket");
+            continue;
+        }
+
+        break;
+    }
+
+    if (p == NULL) {
+        fprintf(stderr, "udp_connect: Failed to bind a socket!\n");
+        exit(201);
+    }
+
+    freeaddrinfo(servinfo);
+
+    *conninfo = p;
+    return sockfd;
+}
+
+int udp_send(int socket, struct addrinfo *conninfo, Opcode opcode, 
+        const char *message) {
+    int bytes;
+    char packet[MAX_PACKET_SIZE];
+
+    /* Prepare packet */
+    sprintf(packet, "%d %s", opcode, message);
+
+    if ((bytes = sendto(socket, packet, strlen(packet), 0,
+             conninfo->ai_addr, conninfo->ai_addrlen)) == -1) {
+        perror("udp_send sendto");
+        exit(300);
+    }
+
+    return bytes;
+}
+
+int udp_recv(int socket, struct sockaddr *conninfo, Opcode *opcode, char *message) {
+    int bytes;
+    socklen_t info_size = sizeof *conninfo;
+
+    if ((bytes = recvfrom(socket, message, MAX_PACKET_SIZE-1, 0,
+        conninfo, &info_size)) == -1) {
+        perror("udp_recv recvfrom");
+        exit(400);
+    }
+
+    message[bytes] = '\0';
+
+    /* Read opcode */
+    char *proper;
+    *opcode = (int) strtol(message, &proper, 10);
+    
+    /* Omit space and copy to output buffer */
+    proper++;
+    strcpy(message, proper);
+
+    return bytes;
+}

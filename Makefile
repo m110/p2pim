@@ -1,7 +1,24 @@
-all: client server
 
-client: client.c p2pim.c p2pim.h
-	gcc client.c p2pim.c -o client -g -O3 -std=c11 -D_POSIX_SOURCE -lpthread
+CFLAGS = -g -O3 -std=c11 -D_POSIX_SOURCE
+LDFLAGS = -lpthread
 
-server: server.c p2pim.c structs.c p2pim.h structs.h
-	gcc server.c p2pim.c structs.c -o server -g -O3 -std=c11 -D_POSIX_SOURCE -lpthread
+CLIENT = client
+CLIENT_HEADERS = p2pim.h opcodes.h
+CLIENT_OBJS = $(CLIENT).c p2pim.c opcodes.c
+
+SERVER = server
+SERVER_HEADERS = p2pim.h structs.h opcodes.h
+SERVER_OBJS = $(SERVER).c p2pim.c structs.c opcodes.c
+
+CC = gcc $(CFLAGS) $(LDFLAGS)
+
+all: $(CLIENT) $(SERVER)
+
+$(CLIENT): $(CLIENT_OBJS)
+	$(CC) $(CLIENT_OBJS) -o $(CLIENT) 
+
+$(SERVER): $(SERVER_OBJS)
+	$(CC) $(SERVER_OBJS) -o $(SERVER)
+
+clean:
+	rm $(CLIENT) $(SERVER)

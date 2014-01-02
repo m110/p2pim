@@ -4,9 +4,12 @@
  */
 
 #include "p2pim.h"
+#include "opcodes.h"
 #include "structs.h"
 
 int main(int argc, char **argv) {
+    register_client_opcodes();
+
     /* Linked list of clients. */
     Client *clients = NULL;
     

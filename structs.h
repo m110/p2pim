@@ -15,3 +15,4 @@ typedef struct Client {
 void add_client(Client **list, char *client_id);
 int delete_client(Client **list, Client *client);
 Client* find_client(Client *list, char *client_id);
+void update_client(Client *client);

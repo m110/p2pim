@@ -40,6 +40,10 @@ int delete_client(Client **list, Client *client) {
     return 1;
 }
 
+void update_client(Client *client) {
+    client->time = current_time();
+}
+
 Client* find_client(Client *list, char *client_id) {
     for (Client *c = list; c != NULL; c = c->next) {
         if (strcmp(c->id, client_id) == 0) {

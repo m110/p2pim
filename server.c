@@ -8,36 +8,6 @@
 
 #define MAXBUFLEN 100
 
-pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-void* cleanup_clients(void *_list) {
-    Client **list = (Client **) _list;
-
-    const unsigned int interval = 1;
-    const unsigned int duration = 5;
-    unsigned int time = current_time();
-
-    while (1) {
-        if (current_time() - time < interval) {
-            continue;
-        }
-
-        Client *c = *list;
-        while (c != NULL) {
-            Client *next = c->next;
-            if (current_time() - c->time > duration) {
-                pthread_mutex_lock(&clients_mutex);
-                delete_client(list, c);
-                pthread_mutex_unlock(&clients_mutex);
-            }
-
-            c = next;
-        }
-
-        time = current_time();
-    }
-}
-
 int main(int argc, char **argv) {
     int sockfd;
     int rv;
@@ -86,20 +56,17 @@ int main(int argc, char **argv) {
     /* Linked list of clients. */
     Client *clients = NULL;
 
-    pthread_t cleanup_thread;
-    pthread_create(&cleanup_thread, NULL, cleanup_clients, (void*) &clients);
-
     printf("Server ready, waiting for connections...\n");
 
     struct sockaddr_storage client_addr;
     socklen_t addr_len = sizeof client_addr;
-    char buffer[MAXBUFLEN];
+    char id[MAXBUFLEN];
     char address[INET6_ADDRSTRLEN];
     unsigned short port;
     int numbytes;
 
     while (1) {
-        if ((numbytes = recvfrom(sockfd, buffer, MAXBUFLEN-1 , 0,
+        if ((numbytes = recvfrom(sockfd, id, MAXBUFLEN-1 , 0,
             (struct sockaddr *)&client_addr, &addr_len)) == -1) {
             perror("recvfrom");
             exit(102);
@@ -107,15 +74,17 @@ int main(int argc, char **argv) {
 
         get_address((struct sockaddr *) &client_addr, address);
         port = get_port((struct sockaddr *) &client_addr);
-        printf("Received from %s port: %d\n", address, port);
-        printf("packet is %d bytes long\n", numbytes);
-        buffer[numbytes] = '\0';
-        printf("packet contains: \"%s\"\n", buffer);
+        id[numbytes] = '\0';
 
-        add_client(&clients, buffer);
+        Client *client = find_client(clients, id);
+        if (client != NULL) {
+            printf("Client \"%s\" sent heartbeat\n", id);
+            update_client(client);
+        } else {
+            printf("Client \"%s\" connected from %s:%d\n", id, address, port);
+            add_client(&clients, id);
+        }
     }
-
-    pthread_join(cleanup_thread, NULL);
 
     close(sockfd);
 

@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
     printf("Server listening on port %s...\n", SERVER_PORT);
 
     struct sockaddr_storage client_addr;
+    char packet[MAX_PACKET_SIZE];
     char message[MAX_PACKET_SIZE];
     char address[INET6_ADDRSTRLEN];
     unsigned short port;
@@ -23,7 +24,8 @@ int main(int argc, char **argv) {
     int numbytes;
 
     while (1) {
-        numbytes = udp_recv(socket, (struct sockaddr *) &client_addr, &opcode, message);
+        numbytes = udp_recv(socket, (struct sockaddr *) &client_addr, packet);
+        unpack_packet(packet, &opcode, message);
 
         get_address((struct sockaddr *) &client_addr, address);
         port = get_port((struct sockaddr *) &client_addr);

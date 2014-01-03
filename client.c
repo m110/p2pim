@@ -5,6 +5,7 @@
 
 #include "p2pim.h"
 #include "opcodes.h"
+#include <ncurses.h>
 
 int main(int argc, char **argv) {
     if (argc != 3) {
@@ -14,6 +15,12 @@ int main(int argc, char **argv) {
 
     register_opcodes();
 
+    /* Init NCURSES */
+    initscr();
+    keypad(stdscr, TRUE);
+    printw("Hello!");
+    refresh();
+
     char *host = argv[1];
     char *client_id = argv[2];
 
@@ -21,20 +28,21 @@ int main(int argc, char **argv) {
     int socket = udp_connect(host, SERVER_PORT, &conninfo);
 
     int bytes, opcode;
-    char message[MAX_PACKET_SIZE];
+    char packet[MAX_PACKET_SIZE];
+    pack_packet(packet, CLI_REGISTER, client_id);
 
     /* Send client ID to the server */
-    bytes = udp_send(socket, conninfo, CLI_REGISTER, client_id);
-    printf("sent %d bytes to %s\n", bytes, host);
+    bytes = udp_send(socket, conninfo, packet);
 
-    while (1) {
-        printf("> ");
+/*    while (1) {
         scanf("%d%s", &opcode, message);
         bytes = udp_send(socket, conninfo, opcode, message);
-        printf("sent %d bytes to %s\n", bytes, host);
-    }
+    }*/
 
     close(socket);
+
+    getch();
+    endwin();
 
     return 0;
 }

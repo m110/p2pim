@@ -15,7 +15,7 @@ CC = gcc $(CFLAGS) $(LDFLAGS)
 all: $(CLIENT) $(SERVER)
 
 $(CLIENT): $(CLIENT_OBJS)
-	$(CC) $(CLIENT_OBJS) -o $(CLIENT) 
+	$(CC) $(CLIENT_OBJS) -o $(CLIENT) -lncurses 
 
 $(SERVER): $(SERVER_OBJS)
 	$(CC) $(SERVER_OBJS) -o $(SERVER)

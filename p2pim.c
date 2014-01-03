@@ -117,13 +117,8 @@ int udp_connect(const char *host, const char *port, struct addrinfo **conninfo) 
     return sockfd;
 }
 
-int udp_send(int socket, struct addrinfo *conninfo, Opcode opcode, 
-        const char *message) {
+int udp_send(int socket, struct addrinfo *conninfo, const char *packet) {
     int bytes;
-    char packet[MAX_PACKET_SIZE];
-
-    /* Prepare packet */
-    sprintf(packet, "%d %s", opcode, message);
 
     if ((bytes = sendto(socket, packet, strlen(packet), 0,
              conninfo->ai_addr, conninfo->ai_addrlen)) == -1) {
@@ -134,25 +129,33 @@ int udp_send(int socket, struct addrinfo *conninfo, Opcode opcode,
     return bytes;
 }
 
-int udp_recv(int socket, struct sockaddr *conninfo, Opcode *opcode, char *message) {
+int udp_recv(int socket, struct sockaddr *conninfo, char *packet) {
     int bytes;
     socklen_t info_size = sizeof *conninfo;
 
-    if ((bytes = recvfrom(socket, message, MAX_PACKET_SIZE-1, 0,
+    if ((bytes = recvfrom(socket, packet, MAX_PACKET_SIZE-1, 0,
         conninfo, &info_size)) == -1) {
         perror("udp_recv recvfrom");
         exit(400);
     }
 
-    message[bytes] = '\0';
+    packet[bytes] = '\0';
 
+    return bytes;
+}
+
+/* Prepare packet */
+void pack_packet(char *packet, Opcode opcode, const char *message) {
+    sprintf(packet, "%d %s", opcode, message);
+}
+
+/* Parse packet */
+void unpack_packet(char *packet, Opcode *opcode, char *message) {
     /* Read opcode */
     char *proper;
-    *opcode = (int) strtol(message, &proper, 10);
+    *opcode = (int) strtol(packet, &proper, 10);
     
     /* Omit space and copy to output buffer */
     proper++;
     strcpy(message, proper);
-
-    return bytes;
 }

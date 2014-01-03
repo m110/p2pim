@@ -8,10 +8,7 @@
 #include "structs.h"
 
 int main(int argc, char **argv) {
-    register_client_opcodes();
-
-    /* Linked list of clients. */
-    Client *clients = NULL;
+    register_opcodes();
     
     /* Bind socket */
     struct addrinfo *conninfo;
@@ -32,15 +29,17 @@ int main(int argc, char **argv) {
         port = get_port((struct sockaddr *) &client_addr);
 
         printf("Got opcode: %d with message: %s from %s:%d\n", opcode, message, address, port);
-        //Client *client = find_client(clients, id);
-/*        if (client != NULL) {
-            printf("Client \"%s\" sent heartbeat\n", id);
-            update_client(client);
+
+        Client *client = get_client(address, port);
+        if (client != NULL) { 
+            printf("Client found.\n");
+            handle_opcode(opcode, message, client);
         } else {
-            printf("Client \"%s\" connected from %s:%d\n", id, address, port);
-            add_client(&clients, id);
+            printf("Client not found.\n");
+            Location location = { .port = port };
+            strcpy(location.address, address);
+            handle_opcode(opcode, message, &location);
         }
-        */
     }
 
     close(socket);

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "structs.h"
-
-#define OPCODES_COUNT   0x005
+#define OPCODES_COUNT   0x006
 
 /*
  * CLI_ - opcodes sent by client
@@ -12,12 +10,17 @@ typedef enum Opcode {
     CLI_REGISTER     =   0x001,
     CLI_HEARTBEAT    =   0x002,
     CLI_CLOSE        =   0x003,
-    CLI_QUERY        =   0x004,
+    CLI_LIST         =   0x004,
+    CLI_QUERY        =   0x005,
 
     SRV_INFO         =   0x005
 } Opcode;
 
-void register_client_opcodes();
-void register_server_opcodes();
+/* Opcodes array */
+int (*opcode_actions[OPCODES_COUNT]) (char *message, void* arg);
 
-int handle_opcode(Opcode opcode, Client *client, char *message);
+static inline int handle_opcode(Opcode opcode, char *message, void* arg) {
+    return (*opcode_actions[opcode])(message, arg);
+}
+
+void register_opcodes();

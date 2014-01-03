@@ -4,11 +4,11 @@ LDFLAGS = -lpthread
 
 CLIENT = client
 CLIENT_HEADERS = p2pim.h opcodes.h
-CLIENT_OBJS = $(CLIENT).c p2pim.c opcodes.c
+CLIENT_OBJS = $(CLIENT).c p2pim.c opcodes_client.c
 
 SERVER = server
 SERVER_HEADERS = p2pim.h structs.h opcodes.h
-SERVER_OBJS = $(SERVER).c p2pim.c structs.c opcodes.c
+SERVER_OBJS = $(SERVER).c p2pim.c structs.c opcodes_server.c
 
 CC = gcc $(CFLAGS) $(LDFLAGS)
 

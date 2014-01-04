@@ -3,8 +3,14 @@
 #include "structs.h"
 
 int handle_register(char *message, void *arg) {
-    Location *location = (Location*) arg;
-    add_client(message, location->address, location->port);
+    Client *client = (Client*) arg;
+    int error = add_client(client);
+
+    if (error) {
+        delete_client(client);
+        return error;
+    }
+
     return 0;
 }
 

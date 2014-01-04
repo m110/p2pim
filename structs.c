@@ -6,29 +6,39 @@ Client *client_list = NULL;
 
 void free_client(Client *client) {
     free(client->id);
+    free(client->conninfo);
     free(client);
 }
 
-void add_client(char *client_id, char *address, unsigned short port) {
+/* Create new client structure */
+Client* create_client(char *client_id, char *address, unsigned short port, struct sockaddr_storage *conninfo) {
+    Client *client = malloc(sizeof(Client));
+    client->id = strdup(client_id);
+    client->time = current_time();
+   
+    /* Save client's location */
+    strcpy(client->public_addr.address, address);
+    client->public_addr.port = port;
+
+    /* Save connection info */
+    client->conninfo = conninfo;
+
+    client->next = NULL;
+
+    return client;
+}
+
+int add_client(Client *client) {
     Client *c = client_list;
     for (; c != NULL && c->next != NULL; c = c->next);
 
-    /* Create new client */
-    Client *new_client = malloc(sizeof(Client));
-    new_client->id = strdup(client_id);
-    new_client->time = current_time();
-    
-    /* Save client's location */
-    strcpy(new_client->public_addr.address, address);
-    new_client->public_addr.port = port;
-
-    new_client->next = NULL;
-
     if (client_list == NULL) {
-        client_list = new_client;
+        client_list = client;
     } else {
-        c->next = new_client;
+        c->next = client;
     }
+
+    return 0;
 }
 
 int delete_client(Client *client) {
@@ -62,6 +72,7 @@ Client* get_client(char *address, unsigned short port) {
                 return c;
             } else {
                 delete_client(c);
+                return NULL;
             }
         }
     }
@@ -72,7 +83,12 @@ Client* get_client(char *address, unsigned short port) {
 Client* get_client_by_id(char *client_id) {
     for (Client *c = client_list; c != NULL; c = c->next) {
         if (strcmp(c->id, client_id) == 0) {
-            return c;
+            if (current_time() - c->time <= CLIENT_DURATION) {
+                return c;
+            } else {
+                delete_client(c);
+                return NULL;
+            }
         }
     }
 

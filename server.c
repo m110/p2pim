@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     int socket = udp_bind(SERVER_PORT, &conninfo);
     printf("Server listening on port %s...\n", SERVER_PORT);
 
-    struct sockaddr_storage client_addr;
+    struct sockaddr_storage *client_info;
     char packet[MAX_PACKET_SIZE];
     char message[MAX_PACKET_SIZE];
     char address[INET6_ADDRSTRLEN];
@@ -24,11 +24,12 @@ int main(int argc, char **argv) {
     int numbytes;
 
     while (1) {
-        numbytes = udp_recv(socket, (struct sockaddr *) &client_addr, packet);
+        client_info = malloc(sizeof(struct sockaddr_storage));
+        numbytes = udp_recv(socket, (struct sockaddr *) client_info, packet);
         unpack_packet(packet, &opcode, message);
 
-        get_address((struct sockaddr *) &client_addr, address);
-        port = get_port((struct sockaddr *) &client_addr);
+        get_address((struct sockaddr *) client_info, address);
+        port = get_port((struct sockaddr *) client_info);
 
         printf("Got opcode: %d with message: %s from %s:%d\n", opcode, message, address, port);
 
@@ -37,10 +38,12 @@ int main(int argc, char **argv) {
             printf("Client found.\n");
             handle_opcode(opcode, message, client);
         } else {
-            printf("Client not found.\n");
-            Location location = { .port = port };
-            strcpy(location.address, address);
-            handle_opcode(opcode, message, &location);
+            if (opcode == CLI_REGISTER) {
+                Client *client = create_client(message, address, port, client_info);
+                handle_opcode(opcode, message, client);
+            } else {
+                printf("Registration required.\n");
+            }
         }
     }
 

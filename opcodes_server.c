@@ -4,14 +4,19 @@
 
 int handle_register(char *message, void *arg) {
     Client *client = (Client*) arg;
-    int error = add_client(client);
 
-    if (error) {
-        delete_client(client);
-        return error;
+    if (get_client_by_id(client->id) == NULL) {
+        printf("Register user %s from %s:%d\n",
+                client->id, 
+                client->public_addr.address, 
+                client->public_addr.port);
+
+        return add_client(client);
+    } else {
+        return ERROR_CLIENT_ID_EXISTS;
     }
-
-    return 0;
+    
+    return STATUS_SUCCESS;
 }
 
 int handle_heartbeat(char *message, void* arg) {

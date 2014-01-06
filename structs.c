@@ -6,12 +6,12 @@ Client *client_list = NULL;
 
 void free_client(Client *client) {
     free(client->id);
-    free(client->conninfo);
+    free(client->addr);
     free(client);
 }
 
 /* Create new client structure */
-Client* create_client(char *client_id, char *address, unsigned short port, struct sockaddr_storage *conninfo) {
+Client* create_client(char *client_id, char *address, unsigned short port, struct sockaddr *addr) {
     Client *client = malloc(sizeof(Client));
     client->id = strdup(client_id);
     client->time = current_time();
@@ -21,7 +21,7 @@ Client* create_client(char *client_id, char *address, unsigned short port, struc
     client->public_addr.port = port;
 
     /* Save connection info */
-    client->conninfo = conninfo;
+    client->addr = addr;
 
     client->next = NULL;
 

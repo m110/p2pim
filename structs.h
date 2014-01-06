@@ -11,11 +11,11 @@ typedef struct Client {
     char *id;
     unsigned int time;
     struct Location public_addr;
-    struct sockaddr_storage *conninfo;
+    struct sockaddr *addr;
     struct Client *next;
 } Client;
 
-Client* create_client(char *client_id, char *address, unsigned short port, struct sockaddr_storage *conninfo);
+Client* create_client(char *client_id, char *address, unsigned short port, struct sockaddr *addr);
 int add_client(Client *client);
 int delete_client(Client *client);
 Client* get_client(char *address, unsigned short port);

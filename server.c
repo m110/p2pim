@@ -23,7 +23,8 @@ int main(int argc, char **argv) {
     Opcode opcode;
     int numbytes;
 
-    while (1) {
+    for (;;) {
+        memset(packet, 0, sizeof(packet));
         client_info = malloc(sizeof(struct sockaddr_storage));
         numbytes = udp_recv(socket, (struct sockaddr *) client_info, packet);
         unpack_packet(packet, &opcode, message);
@@ -36,13 +37,18 @@ int main(int argc, char **argv) {
         Client *client = get_client(address, port);
         if (client != NULL) { 
             printf("Client found.\n");
+            free(client_info);
             handle_opcode(opcode, message, client);
         } else {
-            if (opcode == CLI_REGISTER) {
-                Client *client = create_client(message, address, port, client_info);
-                handle_opcode(opcode, message, client);
-            } else {
-                printf("Registration required.\n");
+            Client *client = create_client(message, address, port,
+                    (struct sockaddr *) client_info);
+
+            int error = handle_opcode(opcode, message, client);
+            if (error) {
+                printf("handle_opcode error: %s\n", StatusMessages[error]);
+                pack_packet(packet, SRV_INFO, StatusMessages[error]);
+                udp_send(socket, client->addr, packet);
+                delete_client(client);
             }
         }
     }

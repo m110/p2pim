@@ -117,11 +117,12 @@ int udp_connect(const char *host, const char *port, struct addrinfo **conninfo) 
     return sockfd;
 }
 
-int udp_send(int socket, struct addrinfo *conninfo, const char *packet) {
+int udp_send(int socket, struct sockaddr *dest_addr, const char *packet) {
     int bytes;
+    socklen_t addr_len = sizeof(struct sockaddr);
 
     if ((bytes = sendto(socket, packet, strlen(packet), 0,
-             conninfo->ai_addr, conninfo->ai_addrlen)) == -1) {
+             dest_addr, addr_len)) == -1) {
         perror("udp_send sendto");
         exit(300);
     }
@@ -129,12 +130,12 @@ int udp_send(int socket, struct addrinfo *conninfo, const char *packet) {
     return bytes;
 }
 
-int udp_recv(int socket, struct sockaddr *conninfo, char *packet) {
+int udp_recv(int socket, struct sockaddr *address, char *packet) {
     int bytes;
-    socklen_t info_size = sizeof *conninfo;
+    socklen_t addr_size = sizeof *address;
 
     if ((bytes = recvfrom(socket, packet, MAX_PACKET_SIZE-1, 0,
-        conninfo, &info_size)) == -1) {
+        address, &addr_size)) == -1) {
         perror("udp_recv recvfrom");
         exit(400);
     }

@@ -7,20 +7,25 @@
  * SRV_ - opcodes sent by server
  */
 typedef enum Opcode {
-    CLI_REGISTER     =   0x001,
-    CLI_HEARTBEAT    =   0x002,
-    CLI_CLOSE        =   0x003,
-    CLI_LIST         =   0x004,
-    CLI_QUERY        =   0x005,
+    CLI_REGISTER     =   0x000,
+    CLI_HEARTBEAT    =   0x001,
+    CLI_CLOSE        =   0x002,
+    CLI_LIST         =   0x003,
+    CLI_QUERY        =   0x004,
 
     SRV_INFO         =   0x005
 } Opcode;
 
-/* Opcodes array */
-int (*opcode_actions[OPCODES_COUNT]) (char *message, void* arg);
+typedef enum OpcodeStatus {
+    STATUS_SUCCESS          =   0x000,
+    ERROR_NOT_REGISTERED      =   0x001,
+    ERROR_CLIENT_ID_EXISTS    =   0x002
+} OpcodeStatus;
 
-static inline int handle_opcode(Opcode opcode, char *message, void* arg) {
-    return (*opcode_actions[opcode])(message, arg);
-}
+extern char* StatusMessages[];
+
+/* Opcodes array */
+extern int (*opcode_actions[OPCODES_COUNT]) (char *message, void* arg);
+extern int handle_opcode(Opcode opcode, char *message, void* arg);
 
 void register_opcodes();

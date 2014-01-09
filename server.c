@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
             int error = handle_opcode(opcode, message, client);
             if (error) {
                 printf("handle_opcode error: %s\n", StatusMessages[error]);
-                pack_packet(packet, SRV_INFO, StatusMessages[error]);
+                pack_packet(packet, SRV_INFO, itoa(error));
                 udp_send(socket, client->addr, packet);
                 delete_client(client);
             }

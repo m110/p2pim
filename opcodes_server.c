@@ -50,3 +50,14 @@ void register_opcodes() {
     opcode_actions[CLI_LIST] = handle_list;
     opcode_actions[CLI_QUERY] = handle_query;
 }
+
+int send_opcode(int socket, Client *client, Opcode opcode, const char *message) {
+    char packet[MAX_PACKET_SIZE];
+    pack_packet(packet, opcode, message);
+    return udp_send(socket, client->addr, packet);
+}
+
+int send_opcode_status(int socket, Client *client, Opcode opcode, OpcodeStatus status) {
+
+}
+

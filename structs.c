@@ -10,24 +10,6 @@ void free_client(Client *client) {
     free(client);
 }
 
-/* Create new client structure */
-Client* create_client(char *client_id, char *address, unsigned short port, struct sockaddr *addr) {
-    Client *client = malloc(sizeof(Client));
-    client->id = strdup(client_id);
-    client->time = current_time();
-   
-    /* Save client's location */
-    strcpy(client->public_addr.address, address);
-    client->public_addr.port = port;
-
-    /* Save connection info */
-    client->addr = addr;
-
-    client->next = NULL;
-
-    return client;
-}
-
 int add_client(Client *client) {
     Client *c = client_list;
     for (; c != NULL && c->next != NULL; c = c->next);
@@ -38,6 +20,7 @@ int add_client(Client *client) {
         c->next = client;
     }
 
+    client->next = NULL;
     return 0;
 }
 

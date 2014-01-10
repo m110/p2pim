@@ -15,7 +15,7 @@ int handle_register(char *message, void *arg) {
     } else {
         return ERROR_CLIENT_ID_EXISTS;
     }
-    
+
     return STATUS_SUCCESS;
 }
 

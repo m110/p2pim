@@ -9,7 +9,10 @@
 
 int main(int argc, char **argv) {
     register_opcodes();
-    
+
+    /* Linked list of clients. */
+    List *clients = NULL;
+
     /* Bind socket */
     struct addrinfo *conninfo;
     int socket = udp_bind(SERVER_PORT, &conninfo);
@@ -46,8 +49,8 @@ int main(int argc, char **argv) {
             int error = handle_opcode(opcode, message, client);
             if (error) {
                 printf("handle_opcode error: %s\n", StatusMessages[error]);
-                pack_packet(packet, SRV_INFO, itoa(error));
-                udp_send(socket, client->addr, packet);
+                //pack_packet(packet, SRV_INFO, itoa(error));
+                //udp_send(socket, client->addr, packet);
                 delete_client(client);
             }
         }

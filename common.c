@@ -1,11 +1,12 @@
 #include "p2p.h"
 #include "common.h"
 
-/* Create new client structure */
+/**
+ * Create new client structure
+ */
 Client* create_client(char *id, char *address, unsigned short port, struct sockaddr *sockaddr) {
     Client *client = malloc(sizeof(Client));
     client->id = strdup(id);
-    client->time = current_time();
 
     /* Save client's location */
     strcpy(client->public_addr.address, address);
@@ -17,3 +18,13 @@ Client* create_client(char *id, char *address, unsigned short port, struct socka
     return client;
 }
 
+/**
+ * Frees memory allocated by client structure.
+ */
+void free_client(Client *client) {
+    assert(client == NULL);
+
+    free(client->id);
+    free(client->sockaddr);
+    free(client);
+}

@@ -7,9 +7,9 @@ typedef struct Location {
 
 typedef struct Client {
     char *id;
-    unsigned int time;
-    struct Location public_addr;
+    Location public_addr;
     struct sockaddr *sockaddr;
 } Client;
 
 Client* create_client(char *id, char *address, unsigned short port, struct sockaddr *sockaddr);
+void free_client(Client *client);

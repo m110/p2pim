@@ -8,7 +8,7 @@ CLIENT_OBJS = $(CLIENT).c p2pim.c opcodes.c opcodes_client.c
 
 SERVER = server
 SERVER_HEADERS = p2pim.h structs.h opcodes.h
-SERVER_OBJS = $(SERVER).c p2pim.c structs.c opcodes.c opcodes_server.c
+SERVER_OBJS = $(SERVER).c p2pim.c structs.c opcodes_server.c opcodes.c
 
 CC = gcc $(CFLAGS) $(LDFLAGS)
 

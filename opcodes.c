@@ -1,6 +1,6 @@
 #include "opcodes.h"
 
-int (*opcode_actions[OPCODES_COUNT]) (char *message, void* arg);
+int (*opcode_actions[OPCODES_COUNT]) (OpcodeData data);
 
 char* StatusMessages[] = {
     "Success",                      // 0x000 STATUS_SUCCESS
@@ -8,6 +8,7 @@ char* StatusMessages[] = {
     "Client ID already exists."     // 0x002 ERROR_CLIENT_ID_EXISTS
 };
 
-inline int handle_opcode(Opcode opcode, char *message, void* arg) {
-    return (*opcode_actions[opcode])(message, arg);
+inline int handle_opcode(OpcodeData data) {
+    assert(data != NULL);
+    return (*opcode_actions[data->opcode])(data);
 }

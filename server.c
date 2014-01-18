@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
     register_opcodes();
 
     /* Linked list of clients. */
-    List *clients = NULL;
+    Node *clients = NULL;
 
     /* Bind socket */
     struct addrinfo *conninfo;
@@ -37,21 +37,21 @@ int main(int argc, char **argv) {
 
         printf("Got opcode: %d with message: %s from %s:%d\n", opcode, message, address, port);
 
-        Client *client = get_client(address, port);
-        if (client != NULL) { 
+        Node *node = get_node(clients, address, port);
+        if (node != NULL) {
             printf("Client found.\n");
             free(client_info);
-            handle_opcode(opcode, message, client);
+            handle_opcode(opcode, message, node);
         } else {
             Client *client = create_client(message, address, port,
                     (struct sockaddr *) client_info);
 
-            int error = handle_opcode(opcode, message, client);
+            int error = handle_opcode(opcode, message, node);
             if (error) {
                 printf("handle_opcode error: %s\n", StatusMessages[error]);
                 //pack_packet(packet, SRV_INFO, itoa(error));
                 //udp_send(socket, client->addr, packet);
-                delete_client(client);
+                delete_node(&clients, node);
             }
         }
     }

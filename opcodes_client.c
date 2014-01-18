@@ -1,7 +1,12 @@
 #include "p2pim.h"
 #include "opcodes.h"
 
-int handle_info(char *message, void* arg) {
+struct OpcodeData {
+    Opcode opcode;
+    char *message;
+};
+
+int handle_info(OpcodeData data) {
     return 0;
 }
 

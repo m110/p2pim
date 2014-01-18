@@ -1,37 +1,49 @@
 #include "p2pim.h"
 #include "structs.h"
 
-void free_client(Client *client) {
-    free(client->id);
-    free(client->sockaddr);
-    free(client);
-}
+/**
+ * Appends existing client structure to the clients list.
+ */
+int add_node(Node **head, Client *client) {
+    Node *last = *head;
+    for (; last != NULL && last->next != NULL; last = last->next);
 
-int add_client(List **list, Client *client) {
-    Client *c = *list;
-    for (; c != NULL && c->next != NULL; c = c->next);
+    /* Create new node for client */
+    Node *node = malloc(sizeof(Node));
+    node->client = client;
+    node->time = current_time();
+    node->next = NULL;
 
-    if (*list == NULL) {
-        *list = client;
+    /* If the list is empty, set the new node as head,
+     * otherwise append it at the end
+     */
+    if (last == NULL) {
+        *head = node;
     } else {
-        c->next = client;
+        last->next = node;
     }
 
-    client->next = NULL;
     return 0;
 }
 
-int delete_client(List **list, Client *client) {
-    if (client == *list) {
-        *list = client->next;
-        free_client(client);
+/**
+ * Deletes client from list.
+ * The node structure is then freed by free_node.
+ */
+int delete_node(Node **head, Node *node) {
+    /* First case: node is the head of list */
+    if (node == *head) {
+        *head = (*head)->next;
+        free_node(node);
         return 0;
     }
 
-    for (Client *c = *list; c != NULL; c = c->next) {
-        if (c->next == client) {
-            c->next = client->next;
-            free_client(client);
+    /* Second case: search the list for node */
+    for (Node *node = *head; node != NULL; node = node->next) {
+        /* Client found in the next node  */
+        if (node->next != NULL && node->next == node) {
+            node->next = node->next->next;
+            free_node(node);
             return 0;
         }
     }
@@ -39,38 +51,41 @@ int delete_client(List **list, Client *client) {
     return 1;
 }
 
-void update_client(Client *client) {
-    client->time = current_time();
-}
-
-Client* get_client(List *list, char *address, unsigned short port) {
-    for (Client *c = *list; c != NULL; c = c->next) {
-        if (strcmp(c->public_addr.address, address) == 0 &&
-            c->public_addr.port == port) {
-
-            if (current_time() - c->time <= CLIENT_DURATION) {
-                return c;
-            } else {
-                delete_client(c);
-                return NULL;
-            }
+/**
+ * Returns node found in list by client address and port.
+ * Returns NULL if node was not found.
+ */
+Node* get_node(Node *head, char *address, unsigned short port) {
+    for (Node *node = head; node != NULL; node = node->next) {
+        if (strcmp(node->client->public_addr.address, address) == 0 &&
+            node->client->public_addr.port == port) {
+            return node;
         }
     }
 
     return NULL;
 }
 
-Client* get_client_by_id(List *list, char *client_id) {
-    for (Client *c = *list; c != NULL; c = c->next) {
-        if (strcmp(c->id, client_id) == 0) {
-            if (current_time() - c->time <= CLIENT_DURATION) {
-                return c;
-            } else {
-                delete_client(c);
-                return NULL;
-            }
+/**
+ * Returns node found in list by client id.
+ * Returns NULL if node was not found.
+ */
+Node* get_node_by_id(Node *head, char *client_id) {
+    for (Node *node = head; node != NULL; node = node->next) {
+        if (strcmp(node->client->id, client_id) == 0) {
+            return node;
         }
     }
 
     return NULL;
+}
+
+/**
+ * Frees memory allocated by node structure. Calls free_client.
+ */
+void free_node(Node *node) {
+    assert(node != NULL);
+
+    free_client(node->client);
+    free(node);
 }

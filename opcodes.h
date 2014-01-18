@@ -17,15 +17,18 @@ typedef enum Opcode {
 } Opcode;
 
 typedef enum OpcodeStatus {
-    STATUS_SUCCESS          =   0x000,
-    ERROR_NOT_REGISTERED      =   0x001,
-    ERROR_CLIENT_ID_EXISTS    =   0x002
+    STATUS_SUCCESS              =   0x000,
+    ERROR_UNKNOWN               =   0x001,
+    ERROR_NOT_REGISTERED        =   0x002,
+    ERROR_CLIENT_ID_EXISTS      =   0x003
 } OpcodeStatus;
 
+struct OpcodeData;
+typedef struct OpcodeData OpcodeData;
 extern char* StatusMessages[];
 
 /* Opcodes array */
-extern int (*opcode_actions[OPCODES_COUNT]) (char *message, void* arg);
-extern int handle_opcode(Opcode opcode, char *message, void* arg);
+extern int (*opcode_actions[OPCODES_COUNT]) (OpcodeData data);
+extern int handle_opcode(OpcodeData data);
 
 void register_opcodes();

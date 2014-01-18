@@ -2,10 +2,19 @@
 #include "opcodes.h"
 #include "structs.h"
 
-int handle_register(char *message, void *arg) {
-    Client *client = (Client*) arg;
+struct OpcodeData {
+    Opcode opcode;
+    char *message;
+    Node *list;
+    Node *node;
+    Client *client;
+};
 
-    if (get_client_by_id(client->id) == NULL) {
+int handle_register(OpcodeData data) {
+    Client *client = data->client;
+    assert(client != NULL);
+
+    if (get_node_by_id(client->id) == NULL) {
         printf("Register user %s from %s:%d\n",
                 client->id, 
                 client->public_addr.address, 
@@ -19,27 +28,27 @@ int handle_register(char *message, void *arg) {
     return STATUS_SUCCESS;
 }
 
-int handle_heartbeat(char *message, void* arg) {
-    Client *client = (Client*) arg;
-    assert(client != NULL);
+int handle_heartbeat(OpcodeData data) {
+    Node *node = data->node;
+    assert(node != NULL);
 
-    update_client(client);
+    node->time = current_time();
     return 0;
 }
 
-int handle_close(char *message, void* arg) {
-    Client *client = (Client*) arg;
-    assert(client != NULL);
+int handle_close(OpcodeData data) {
+    Node *node = data->node;
+    assert(node != NULL);
 
-    delete_client(client);
+    delete_node(node);
     return 0;
 }
 
-int handle_list(char *message, void* arg) {
+int handle_list(OpcodeData data) {
     return 0;
 }
 
-int handle_query(char *message, void* arg) {
+int handle_query(OpcodeData data) {
     return 0;
 }
 

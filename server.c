@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
     register_opcodes();
 
     /* Linked list of clients. */
-    Node *clients = NULL;
+    struct node *clients = NULL;
 
     /* Bind socket */
     struct addrinfo *conninfo;
@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
     char message[MAX_PACKET_SIZE];
     char address[INET6_ADDRSTRLEN];
     unsigned short port;
-    Opcode opcode;
+    enum opcode opcode;
     int numbytes;
 
     for (;;) {
@@ -38,23 +38,23 @@ int main(int argc, char **argv) {
 
         printf("Got opcode: %d with message: %s from %s:%d\n", opcode, message, address, port);
 
-        OpcodeData data = { .opcode = opcode, .message = message, .list = clients };
+        struct opcode_context ctx = { .opcode = opcode, .message = message, .list = clients };
 
-        Node *node = get_node(clients, address, port);
+        struct node *node = get_node(clients, address, port);
         if (node != NULL) {
             printf("Client found.\n");
             free(client_info);
-            data.node = node;
-            handle_opcode(&data);
+            ctx.node = node;
+            handle_opcode(&ctx);
         } else {
             printf("New client\n");
-            Client *client = create_client(message, address, port,
+            struct client *client = create_client(message, address, port,
                     (struct sockaddr *) client_info);
 
-            data.client = client;
-            int error = handle_opcode(&data);
+            ctx.client = client;
+            int error = handle_opcode(&ctx);
             if (error) {
-                printf("handle_opcode error: %s\n", StatusMessages[error]);
+                printf("handle_opcode error: %s\n", status_messages[error]);
                 //pack_packet(packet, SRV_INFO, itoa(error));
                 //udp_send(socket, client->addr, packet);
                 free_client(client);

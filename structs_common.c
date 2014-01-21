@@ -4,8 +4,8 @@
 /**
  * Create new client structure
  */
-Client* create_client(char *id, char *address, unsigned short port, struct sockaddr *sockaddr) {
-    Client *client = malloc(sizeof(Client));
+struct client* create_client(char *id, char *address, unsigned short port, struct sockaddr *sockaddr) {
+    struct client *client = malloc(sizeof(client));
     client->id = strdup(id);
 
     /* Save client's location */
@@ -21,7 +21,7 @@ Client* create_client(char *id, char *address, unsigned short port, struct socka
 /**
  * Frees memory allocated by client structure.
  */
-void free_client(Client *client) {
+void free_client(struct client *client) {
     assert(client != NULL);
 
     free(client->id);

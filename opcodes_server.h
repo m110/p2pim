@@ -3,12 +3,12 @@
 
 #include "structs_server.h"
 
-struct OpcodeData {
-    Opcode opcode;
+struct opcode_context {
+    enum opcode opcode;
     char *message;
-    Node *list;
-    Node *node;
-    Client *client;
+    struct node *list;
+    struct node *node;
+    struct client *client;
 };
 
 #endif

@@ -3,18 +3,18 @@
 
 #include "net.h"
 
-typedef struct Location {
+struct net_location {
     char address[INET6_ADDRSTRLEN];
     unsigned short port;
-} Location;
+};
 
-typedef struct Client {
+struct client {
     char *id;
-    Location public_addr;
+    struct net_location public_addr;
     struct sockaddr *sockaddr;
-} Client;
+};
 
-Client* create_client(char *id, char *address, unsigned short port, struct sockaddr *sockaddr);
-void free_client(Client *client);
+struct client* create_client(char *id, char *address, unsigned short port, struct sockaddr *sockaddr);
+void free_client(struct client *client);
 
 #endif

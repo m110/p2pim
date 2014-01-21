@@ -135,16 +135,16 @@ int udp_recv(int socket, struct sockaddr *address, char *packet) {
 }
 
 /* Prepare packet */
-void pack_packet(char *packet, Opcode opcode, const char *message) {
+void pack_packet(char *packet, enum opcode opcode, const char *message) {
     sprintf(packet, "%d %s", opcode, message);
 }
 
 /* Parse packet */
-void unpack_packet(char *packet, Opcode *opcode, char *message) {
+void unpack_packet(char *packet, enum opcode *opcode, char *message) {
     /* Read opcode */
     char *proper;
     *opcode = (int) strtol(packet, &proper, 10);
-    
+
     /* Omit space and copy to output buffer */
     proper++;
     strcpy(message, proper);

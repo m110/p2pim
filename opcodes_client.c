@@ -2,7 +2,7 @@
 #include "opcodes.h"
 #include "opcodes_client.h"
 
-int handle_info(OpcodeData *data) {
+int handle_info(struct opcode_context *ctx) {
     return 0;
 }
 

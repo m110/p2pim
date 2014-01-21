@@ -18,7 +18,7 @@ int udp_bind(const char *port, struct addrinfo **conninfo);
 int udp_connect(const char *host, const char *port, struct addrinfo **conninfo);
 int udp_send(int socket, struct sockaddr *dest_addr, const char *packet);
 int udp_recv(int socket, struct sockaddr *address, char *packet);
-void pack_packet(char *packet, Opcode opcode, const char *message);
-void unpack_packet(char *packet, Opcode *opcode, char *message);
+void pack_packet(char *packet, enum opcode opcode, const char *message);
+void unpack_packet(char *packet, enum opcode *opcode, char *message);
 
 #endif

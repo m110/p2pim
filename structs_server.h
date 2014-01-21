@@ -5,19 +5,19 @@
 
 #define CLIENT_DURATION 30
 
-typedef struct Node {
-    Client *client;
+struct node {
+    struct client *client;
     unsigned int time;
-    struct Node *next;
-} Node;
+    struct node *next;
+};
 
-int add_node(Node **head, Client *client);
-int delete_node(Node **head, Node *node);
-Node* get_node(Node *head, char *address, unsigned short port);
-Node* get_node_by_id(Node *head, char *client_id);
-void free_node(Node *node);
+int add_node(struct node **head, struct client *client);
+int delete_node(struct node **head, struct node *node);
+struct node* get_node(struct node *head, char *address, unsigned short port);
+struct node* get_node_by_id(struct node *head, char *client_id);
+void free_node(struct node *node);
 
-int send_opcode(int socket, Client *client, Opcode opcode, const char *message);
-int send_opcode_status(int socket, Client *client, Opcode opcode, OpcodeStatus status);
+int send_opcode(int socket, struct client *client, enum opcode opcode, const char *message);
+int send_opcode_status(int socket, struct client *client, enum opcode opcode, enum opcode_status status);
 
 #endif

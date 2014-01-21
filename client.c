@@ -4,7 +4,7 @@
  */
 
 #include "p2pim.h"
-#include "opcodes.h"
+#include "net.h"
 #include <ncurses.h>
 
 int main(int argc, char **argv) {

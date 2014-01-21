@@ -1,4 +1,4 @@
-#include "p2p.h"
+#include "p2pim.h"
 #include "common.h"
 
 /**
@@ -22,7 +22,7 @@ Client* create_client(char *id, char *address, unsigned short port, struct socka
  * Frees memory allocated by client structure.
  */
 void free_client(Client *client) {
-    assert(client == NULL);
+    assert(client != NULL);
 
     free(client->id);
     free(client->sockaddr);

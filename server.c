@@ -4,7 +4,9 @@
  */
 
 #include "p2pim.h"
-#include "opcodes.h"
+#include "net.h"
+#include "opcodes_server.h"
+#include "common.h"
 #include "structs.h"
 
 int main(int argc, char **argv) {
@@ -37,21 +39,26 @@ int main(int argc, char **argv) {
 
         printf("Got opcode: %d with message: %s from %s:%d\n", opcode, message, address, port);
 
+        OpcodeData data = { .opcode = opcode, .message = message, .list = clients };
+
         Node *node = get_node(clients, address, port);
         if (node != NULL) {
             printf("Client found.\n");
             free(client_info);
-            handle_opcode(opcode, message, node);
+            data.node = node;
+            handle_opcode(&data);
         } else {
+            printf("New client\n");
             Client *client = create_client(message, address, port,
                     (struct sockaddr *) client_info);
 
-            int error = handle_opcode(opcode, message, node);
+            data.client = client;
+            int error = handle_opcode(&data);
             if (error) {
                 printf("handle_opcode error: %s\n", StatusMessages[error]);
                 //pack_packet(packet, SRV_INFO, itoa(error));
                 //udp_send(socket, client->addr, packet);
-                delete_node(&clients, node);
+                free_client(client);
             }
         }
     }

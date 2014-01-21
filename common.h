@@ -1,5 +1,7 @@
 #pragma once
 
+#include "net.h"
+
 typedef struct Location {
     char address[INET6_ADDRSTRLEN];
     unsigned short port;

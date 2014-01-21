@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _OPCODES_H
+#define _OPCODES_H
 
 #define OPCODES_COUNT   0x006
 
@@ -32,3 +33,5 @@ extern int (*opcode_actions[OPCODES_COUNT]) (OpcodeData *data);
 extern int handle_opcode(OpcodeData *data);
 
 void register_opcodes();
+
+#endif

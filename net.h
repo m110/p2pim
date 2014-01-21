@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _NET_H
+#define _NET_H
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -19,3 +20,5 @@ int udp_send(int socket, struct sockaddr *dest_addr, const char *packet);
 int udp_recv(int socket, struct sockaddr *address, char *packet);
 void pack_packet(char *packet, Opcode opcode, const char *message);
 void unpack_packet(char *packet, Opcode *opcode, char *message);
+
+#endif

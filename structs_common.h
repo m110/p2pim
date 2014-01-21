@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _STRUCTS_COMMON_H
+#define _STRUCTS_COMMON_H
 
 #include "net.h"
 
@@ -15,3 +16,5 @@ typedef struct Client {
 
 Client* create_client(char *id, char *address, unsigned short port, struct sockaddr *sockaddr);
 void free_client(Client *client);
+
+#endif

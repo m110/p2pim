@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _P2PIM_H
+#define _P2PIM_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,3 +15,5 @@
 /* General utility functions */
 unsigned int current_time();
 char* strdup(const char *s);
+
+#endif

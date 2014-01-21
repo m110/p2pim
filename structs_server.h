@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _STRUCTS_SERVER_H
+#define _STRUCTS_SERVER_H
 
 #include "structs_common.h"
 
@@ -18,3 +19,5 @@ void free_node(Node *node);
 
 int send_opcode(int socket, Client *client, Opcode opcode, const char *message);
 int send_opcode_status(int socket, Client *client, Opcode opcode, OpcodeStatus status);
+
+#endif

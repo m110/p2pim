@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common.h"
-#include "structs.h"
+#include "structs_server.h"
 
 struct OpcodeData {
     Opcode opcode;

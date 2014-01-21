@@ -1,6 +1,5 @@
 #include "p2pim.h"
-#include "common.h"
-#include "structs.h"
+#include "structs_server.h"
 
 /**
  * Appends existing client structure to the clients list.

@@ -1,5 +1,5 @@
 #include "p2pim.h"
-#include "common.h"
+#include "structs_common.h"
 
 /**
  * Create new client structure

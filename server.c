@@ -6,8 +6,7 @@
 #include "p2pim.h"
 #include "net.h"
 #include "opcodes_server.h"
-#include "common.h"
-#include "structs.h"
+#include "structs_server.h"
 
 int main(int argc, char **argv) {
     register_opcodes();

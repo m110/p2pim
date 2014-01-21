@@ -1,7 +1,6 @@
 #include "p2pim.h"
 #include "opcodes.h"
 #include "opcodes_server.h"
-#include "structs.h"
 
 int handle_register(OpcodeData *data) {
     Client *client = data->client;

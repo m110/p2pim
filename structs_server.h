@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "structs_common.h"
 
 #define CLIENT_DURATION 30
 

@@ -2,8 +2,7 @@
 #define _OPCODES_CLIENT_H
 
 struct opcode_context  {
-    enum opcode opcode;
-    char *message;
+    struct packet_context *p_ctx;
 };
 
 #endif

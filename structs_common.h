@@ -3,18 +3,20 @@
 
 #include "net.h"
 
+#define MAX_PEER_ID_LEN         32
+
 struct net_location {
     char address[INET6_ADDRSTRLEN];
     unsigned short port;
 };
 
-struct client {
-    char *id;
+struct peer {
+    char id[MAX_PEER_ID_LEN];
     struct net_location public_addr;
-    struct sockaddr *sockaddr;
+    struct sockaddr sockaddr;
 };
 
-struct client* create_client(char *id, char *address, unsigned short port, struct sockaddr *sockaddr);
-void free_client(struct client *client);
+struct peer* create_peer(char *id, char *address, unsigned short port, struct sockaddr *sockaddr);
+void free_peer(struct peer *peer);
 
 #endif

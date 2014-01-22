@@ -2,29 +2,28 @@
 #include "structs_common.h"
 
 /**
- * Create new client structure
+ * Create new peer structure
  */
-struct client* create_client(char *id, char *address, unsigned short port, struct sockaddr *sockaddr) {
-    struct client *client = malloc(sizeof(client));
-    client->id = strdup(id);
+struct peer* create_peer(char *id, char *address, unsigned short port, struct sockaddr *sockaddr) {
+    struct peer *peer = malloc(sizeof(peer));
 
-    /* Save client's location */
-    strcpy(client->public_addr.address, address);
-    client->public_addr.port = port;
+    /* Save peer's ID */
+    strncpy(peer->id, id, MAX_PEER_ID_LEN);
+
+    /* Save peer's location */
+    strncpy(peer->public_addr.address, address, INET6_ADDRSTRLEN);
+    peer->public_addr.port = port;
 
     /* Save connection info */
-    client->sockaddr = sockaddr;
+    peer->sockaddr = *sockaddr;
 
-    return client;
+    return peer;
 }
 
 /**
- * Frees memory allocated by client structure.
+ * Frees memory allocated by peer structure.
  */
-void free_client(struct client *client) {
-    assert(client != NULL);
-
-    free(client->id);
-    free(client->sockaddr);
-    free(client);
+void free_peer(struct peer *peer) {
+    assert(peer != NULL);
+    free(peer);
 }

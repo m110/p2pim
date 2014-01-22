@@ -19,45 +19,35 @@ int main(int argc, char **argv) {
     int socket = udp_bind(SERVER_PORT, &conninfo);
     printf("Server listening on port %s...\n", SERVER_PORT);
 
-    struct sockaddr_storage *client_info;
-    char packet[MAX_PACKET_SIZE];
-    char message[MAX_PACKET_SIZE];
-    char address[INET6_ADDRSTRLEN];
-    unsigned short port;
-    enum opcode opcode;
-    int numbytes;
+    int bytes;
+    struct peer *client;
+    struct packet_context p_ctx;
 
     for (;;) {
-        memset(packet, 0, sizeof(packet));
-        client_info = malloc(sizeof(struct sockaddr_storage));
-        numbytes = udp_recv(socket, (struct sockaddr *) client_info, packet);
-        unpack_packet(packet, &opcode, message);
+        packet_recv(socket, &client, &p_ctx);
 
-        get_address((struct sockaddr *) client_info, address);
-        port = get_port((struct sockaddr *) client_info);
+        printf("Got opcode: %d with message: %s from %s:%d\n", 
+                p_ctx.opcode, p_ctx.message, client->public_addr.address,
+                client->public_addr.port);
 
-        printf("Got opcode: %d with message: %s from %s:%d\n", opcode, message, address, port);
+        struct opcode_context o_ctx = { .p_ctx = &p_ctx, .list = clients };
+        struct node *node = get_node(clients, &client->public_addr);
 
-        struct opcode_context ctx = { .opcode = opcode, .message = message, .list = clients };
-
-        struct node *node = get_node(clients, address, port);
         if (node != NULL) {
             printf("Client found.\n");
-            free(client_info);
-            ctx.node = node;
-            handle_opcode(&ctx);
+            free_peer(client);
+            o_ctx.node = node;
+            handle_opcode(&o_ctx);
         } else {
             printf("New client\n");
-            struct client *client = create_client(message, address, port,
-                    (struct sockaddr *) client_info);
 
-            ctx.client = client;
-            int error = handle_opcode(&ctx);
+            o_ctx.peer = client;
+            int error = handle_opcode(&o_ctx);
             if (error) {
                 printf("handle_opcode error: %s\n", status_messages[error]);
                 //pack_packet(packet, SRV_INFO, itoa(error));
                 //udp_send(socket, client->addr, packet);
-                free_client(client);
+                free_peer(client);
             }
         }
     }

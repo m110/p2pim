@@ -4,11 +4,10 @@
 #include "structs_server.h"
 
 struct opcode_context {
-    enum opcode opcode;
-    char *message;
+    struct packet_context *p_ctx;
     struct node *list;
     struct node *node;
-    struct client *client;
+    struct peer *peer;
 };
 
 #endif

@@ -20,7 +20,7 @@ enum opcode_status {
     STATUS_SUCCESS              =   0x000,
     ERROR_UNKNOWN               =   0x001,
     ERROR_NOT_REGISTERED        =   0x002,
-    ERROR_CLIENT_ID_EXISTS      =   0x003
+    ERROR_PEER_ID_EXISTS        =   0x003
 };
 
 struct opcode_context;

@@ -2,15 +2,15 @@
 #include "structs_server.h"
 
 /**
- * Appends existing client structure to the clients list.
+ * Appends existing peer structure to the peers list.
  */
-int add_node(struct node **head, struct client *client) {
+int add_node(struct node **head, struct peer *peer) {
     struct node *last = *head;
     for (; last != NULL && last->next != NULL; last = last->next);
 
-    /* Create new node for struct client */
+    /* Create new node for struct peer */
     struct node *node = malloc(sizeof(node));
-    node->client = client;
+    node->peer = peer;
     node->time = current_time();
     node->next = NULL;
 
@@ -27,7 +27,7 @@ int add_node(struct node **head, struct client *client) {
 }
 
 /**
- * Deletes client from list.
+ * Deletes peer from list.
  * The node structure is then freed by free_node.
  */
 int delete_node(struct node **head, struct node *node) {
@@ -40,7 +40,7 @@ int delete_node(struct node **head, struct node *node) {
 
     /* Second case: search the list for struct node */
     for (struct node *node = *head; node != NULL; node = node->next) {
-        /* Client found in the next node  */
+        /* peer found in the next node  */
         if (node->next != NULL && node->next == node) {
             node->next = node->next->next;
             free_node(node);
@@ -52,13 +52,13 @@ int delete_node(struct node **head, struct node *node) {
 }
 
 /**
- * Returns node found in list by client address and port.
+ * Returns node found in list by peer address and port.
  * Returns NULL if node was not found.
  */
-struct node* get_node(struct node *head, char *address, unsigned short port) {
+struct node* get_node(struct node *head, struct net_location *location) {
     for (struct node *node = head; node != NULL; node = node->next) {
-        if (strcmp(node->client->public_addr.address, address) == 0 &&
-            node->client->public_addr.port == port) {
+        if (strcmp(node->peer->public_addr.address, location->address) == 0 &&
+            node->peer->public_addr.port == location->port) {
             return node;
         }
     }
@@ -67,12 +67,12 @@ struct node* get_node(struct node *head, char *address, unsigned short port) {
 }
 
 /**
- * Returns node found in list by client id.
+ * Returns node found in list by peer id.
  * Returns NULL if node was not found.
  */
-struct node* get_node_by_id(struct node *head, char *client_id) {
+struct node* get_node_by_id(struct node *head, char *peer_id) {
     for (struct node *node = head; node != NULL; node = node->next) {
-        if (strcmp(node->client->id, client_id) == 0) {
+        if (strcmp(node->peer->id, peer_id) == 0) {
             return node;
         }
     }
@@ -81,11 +81,11 @@ struct node* get_node_by_id(struct node *head, char *client_id) {
 }
 
 /**
- * Frees memory allocated by node structure. Calls free_client.
+ * Frees memory allocated by node structure. Calls free_peer.
  */
 void free_node(struct node *node) {
     assert(node != NULL);
 
-    free_client(node->client);
+    free_peer(node->peer);
     free(node);
 }

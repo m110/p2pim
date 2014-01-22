@@ -1,5 +1,12 @@
 #include "p2pim.h"
+#include "structs_common.h"
 #include "net.h"
+
+int prepare_ctx(struct packet_context *p_ctx, enum opcode opcode, char *message) {
+    p_ctx->opcode = opcode;
+    strncpy(p_ctx->message, message, MAX_MESSAGE_LEN);
+    return 0;
+}
 
 /* Get IP address from sockadd struct */
 void get_address(struct sockaddr *sa, char *address) {
@@ -106,12 +113,12 @@ int udp_connect(const char *host, const char *port, struct addrinfo **conninfo) 
     return sockfd;
 }
 
-int udp_send(int socket, struct sockaddr *dest_addr, const char *packet) {
+int udp_send(int socket, struct sockaddr *sockaddr, const char *message) {
     int bytes;
-    socklen_t addr_len = sizeof(struct sockaddr);
+    socklen_t addr_len = sizeof *sockaddr;
 
-    if ((bytes = sendto(socket, packet, strlen(packet), 0,
-             dest_addr, addr_len)) == -1) {
+    if ((bytes = sendto(socket, message, strlen(message), 0,
+             sockaddr, addr_len)) == -1) {
         perror("udp_send sendto");
         exit(300);
     }
@@ -119,12 +126,12 @@ int udp_send(int socket, struct sockaddr *dest_addr, const char *packet) {
     return bytes;
 }
 
-int udp_recv(int socket, struct sockaddr *address, char *packet) {
+int udp_recv(int socket, struct sockaddr *sockaddr, char *packet) {
     int bytes;
-    socklen_t addr_size = sizeof *address;
+    socklen_t addr_len = sizeof *sockaddr;
 
     if ((bytes = recvfrom(socket, packet, MAX_PACKET_SIZE-1, 0,
-        address, &addr_size)) == -1) {
+            sockaddr, &addr_len)) == -1) {
         perror("udp_recv recvfrom");
         exit(400);
     }
@@ -134,18 +141,34 @@ int udp_recv(int socket, struct sockaddr *address, char *packet) {
     return bytes;
 }
 
-/* Prepare packet */
-void pack_packet(char *packet, enum opcode opcode, const char *message) {
-    sprintf(packet, "%d %s", opcode, message);
+/* Send packet to peer */
+int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
+    char packet[MAX_PACKET_SIZE];
+
+    // TODO pack with TPL
+
+    return udp_send(socket, &peer->sockaddr, packet);
 }
 
-/* Parse packet */
-void unpack_packet(char *packet, enum opcode *opcode, char *message) {
-    /* Read opcode */
-    char *proper;
-    *opcode = (int) strtol(packet, &proper, 10);
+/* Receive packet from peer */
+int packet_recv(int socket, struct peer **peer, struct packet_context *p_ctx) {
+    char packet[MAX_PACKET_SIZE];
+    struct sockaddr_storage sockaddr;
+    int bytes;
 
-    /* Omit space and copy to output buffer */
-    proper++;
-    strcpy(message, proper);
+    char address[INET6_ADDRSTRLEN];
+    unsigned short port;
+
+    bytes = udp_recv(socket, (struct sockaddr *) &sockaddr, packet);
+
+    get_address((struct sockaddr *) &sockaddr, address);
+    port = get_port((struct sockaddr *) &sockaddr);
+
+    // TODO unpack with TPL
+    // p_ctx->opcode = ...
+    // strncpy(p_ctx->message, packet, ...
+
+    *peer = create_peer("tmp", address, port, (struct sockaddr *) &sockaddr);
+
+    return bytes;
 }

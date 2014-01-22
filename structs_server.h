@@ -3,21 +3,21 @@
 
 #include "structs_common.h"
 
-#define CLIENT_DURATION 30
+#define peer_DURATION 30
 
 struct node {
-    struct client *client;
+    struct peer *peer;
     unsigned int time;
     struct node *next;
 };
 
-int add_node(struct node **head, struct client *client);
+int add_node(struct node **head, struct peer *peer);
 int delete_node(struct node **head, struct node *node);
-struct node* get_node(struct node *head, char *address, unsigned short port);
-struct node* get_node_by_id(struct node *head, char *client_id);
+struct node* get_node(struct node *head, struct net_location *location);
+struct node* get_node_by_id(struct node *head, char *peer_id);
 void free_node(struct node *node);
 
-int send_opcode(int socket, struct client *client, enum opcode opcode, const char *message);
-int send_opcode_status(int socket, struct client *client, enum opcode opcode, enum opcode_status status);
+int send_opcode(int socket, struct peer *peer, enum opcode opcode, const char *message);
+int send_opcode_status(int socket, struct peer *peer, enum opcode opcode, enum opcode_status status);
 
 #endif

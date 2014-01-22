@@ -3,18 +3,18 @@
 #include "opcodes_server.h"
 
 int handle_register(struct opcode_context *ctx) {
-    struct client *client = ctx->client;
-    assert(client != NULL);
+    struct peer *peer = ctx->peer;
+    assert(peer != NULL);
 
-    if (get_node_by_id(ctx->list, client->id) == NULL) {
+    if (get_node_by_id(ctx->list, peer->id) == NULL) {
         printf("Register user %s from %s:%d\n",
-                client->id, 
-                client->public_addr.address, 
-                client->public_addr.port);
+                peer->id, 
+                peer->public_addr.address, 
+                peer->public_addr.port);
 
-        return add_node(&ctx->list, client);
+        return add_node(&ctx->list, peer);
     } else {
-        return ERROR_CLIENT_ID_EXISTS;
+        return ERROR_PEER_ID_EXISTS;
     }
 
     return STATUS_SUCCESS;
@@ -55,14 +55,3 @@ void register_opcodes() {
     opcode_actions[CLI_CLOSE] = handle_close;
     opcode_actions[CLI_LIST] = handle_list;
 }
-
-int send_opcode(int socket, struct client *client, enum opcode opcode, const char *message) {
-    char packet[MAX_PACKET_SIZE];
-    pack_packet(packet, opcode, message);
-    return udp_send(socket, client->sockaddr, packet);
-}
-
-int send_opcode_status(int socket, struct client *client, enum opcode opcode, enum opcode_status status) {
-
-}
-

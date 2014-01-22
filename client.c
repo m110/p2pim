@@ -5,11 +5,12 @@
 
 #include "p2pim.h"
 #include "net.h"
+#include "structs_common.h"
 #include <ncurses.h>
 
 int main(int argc, char **argv) {
     if (argc != 3) {
-        fprintf(stderr, "usage: %s <hostname> <client_id>\n", argv[0]);
+        fprintf(stderr, "usage: %s <hostname> <peer_id>\n", argv[0]);
         return 1;
     }
 
@@ -22,26 +23,32 @@ int main(int argc, char **argv) {
     refresh();
 
     char *host = argv[1];
-    char *client_id = argv[2];
+    char *peer_id = argv[2];
 
     struct addrinfo *conninfo;
-    int socket = udp_connect(host, SERVER_PORT, &conninfo);
+    struct sockaddr sockaddr;
 
-    int bytes, opcode;
-    char packet[MAX_PACKET_SIZE];
+    struct peer server = {
+        .id = "server",
+        .sockaddr = conninfo->ai_addr
+    };
 
-    /* Send client ID to the server */
-    pack_packet(packet, CLI_REGISTER, client_id);
-    bytes = udp_send(socket, conninfo->ai_addr, packet);
+    int socket;
+    int bytes;
+    struct packet_context p_ctx;
+
+    socket = udp_connect(host, SERVER_PORT, &conninfo);
+
+    prepare_ctx(&p_ctx, CLI_REGISTER, peer_id);
+    bytes = packet_send(socket, &server, &p_ctx);
 
     sleep(1);
 
-    pack_packet(packet, CLI_HEARTBEAT, "");
-    bytes = udp_send(socket, conninfo->ai_addr, packet);
+    prepare_ctx(&p_ctx, CLI_HEARTBEAT, "");
+    bytes = packet_send(socket, &server, &p_ctx);
 
-    struct sockaddr srv;
-    udp_recv(socket, &srv, packet);
-    printw("Server response: %s\n",  packet);
+    //udp_recv(socket, &srv, packet);
+    //printw("Server response: %s\n",  packet);
     refresh();
 /*    while (1) {
         scanf("%d%s", &opcode, message);

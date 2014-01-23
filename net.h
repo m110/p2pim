@@ -31,6 +31,6 @@ int udp_connect(const char *host, const char *port, struct addrinfo **conninfo);
 int udp_send(int socket, struct sockaddr *dest_addr, const char *packet);
 int udp_recv(int socket, struct sockaddr *address, char *packet);
 int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx);
-int packet_recv(int socket, struct peer **peer, struct packet_context *p_ctx);
+int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx);
 
 #endif

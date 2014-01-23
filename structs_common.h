@@ -16,7 +16,6 @@ struct peer {
     struct sockaddr sockaddr;
 };
 
-struct peer* create_peer(char *id, char *address, unsigned short port, struct sockaddr *sockaddr);
-void free_peer(struct peer *peer);
+struct peer create_peer(char *id, char *address, unsigned short port, struct sockaddr *sockaddr);
 
 #endif

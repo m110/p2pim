@@ -1,5 +1,5 @@
 
-CFLAGS = -g -O3 -std=c11 -D_POSIX_SOURCE
+CFLAGS = -Wall -g -O3 -std=c11 -D_POSIX_SOURCE
 LDFLAGS = -lpthread
 
 CLIENT = client

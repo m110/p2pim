@@ -9,7 +9,7 @@ int add_node(struct node **head, struct peer *peer) {
     for (; last != NULL && last->next != NULL; last = last->next);
 
     /* Create new node for struct peer */
-    struct node *node = malloc(sizeof(node));
+    struct node *node = malloc(sizeof(struct node));
     node->peer = peer;
     node->time = current_time();
     node->next = NULL;
@@ -86,6 +86,5 @@ struct node* get_node_by_id(struct node *head, char *peer_id) {
 void free_node(struct node *node) {
     assert(node != NULL);
 
-    free_peer(node->peer);
     free(node);
 }

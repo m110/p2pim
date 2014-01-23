@@ -151,7 +151,7 @@ int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
 }
 
 /* Receive packet from peer */
-int packet_recv(int socket, struct peer **peer, struct packet_context *p_ctx) {
+int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx) {
     char packet[MAX_PACKET_SIZE];
     struct sockaddr_storage sockaddr;
     int bytes;

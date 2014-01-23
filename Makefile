@@ -2,13 +2,16 @@
 CFLAGS = -Wall -g -O3 -std=c11 -D_POSIX_SOURCE
 LDFLAGS = -lpthread
 
+SHARED_HEADERS = p2pim.h structs_common.h net.h opcodes.h
+SHARED_OBJS = p2pim.c structs_common.c net.c opcodes.c
+
 CLIENT = client
-CLIENT_HEADERS = p2pim.h structs_common.h net.h opcodes.h opcodes_client.h
-CLIENT_OBJS = $(CLIENT).c p2pim.c structs_common.c net.c opcodes.c opcodes_client.c
+CLIENT_HEADERS = $(SHARED_HEADERS) opcodes_client.h
+CLIENT_OBJS = $(CLIENT).c $(SHARED_OBJS) opcodes_client.c
 
 SERVER = server
-SERVER_HEADERS = p2pim.h structs_common.h net.h structs_server.h opcodes.h opcodes_server.h
-SERVER_OBJS = $(SERVER).c p2pim.c structs_common.c net.c structs_server.c opcodes_server.c opcodes.c
+SERVER_HEADERS = $(SHARED_HEADERS) structs_server.h opcodes_server.h
+SERVER_OBJS = $(SERVER).c $(SHARED_OBJS) structs_server.c opcodes_server.c
 
 CC = gcc $(CFLAGS) $(LDFLAGS)
 

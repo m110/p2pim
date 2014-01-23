@@ -9,6 +9,11 @@
 #include "structs_server.h"
 
 int main(int argc, char **argv) {
+    unsigned short port = DEFAULT_SERVER_PORT;
+    if (argc > 1) {
+        port = atoi(argv[1]);
+    }
+
     register_opcodes();
 
     /* Linked list of clients. */
@@ -16,8 +21,8 @@ int main(int argc, char **argv) {
 
     /* Bind socket */
     struct addrinfo *conninfo;
-    int socket = udp_bind(SERVER_PORT, &conninfo);
-    printf("Server listening on port %s...\n", SERVER_PORT);
+    int socket = udp_bind(port, &conninfo);
+    printf("Server listening on port %d...\n", port);
 
     struct peer client;
     struct packet_context p_ctx;
@@ -43,8 +48,7 @@ int main(int argc, char **argv) {
             int error = handle_opcode(&o_ctx);
             if (error) {
                 printf("handle_opcode error: %s\n", status_messages[error]);
-                //pack_packet(packet, SRV_INFO, itoa(error));
-                //udp_send(socket, client->addr, packet);
+                // TODO send error message
             }
         }
     }

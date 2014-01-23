@@ -10,7 +10,7 @@
 #include <pthread.h>
 #include <assert.h>
 
-#define SERVER_PORT         "5000"
+#define DEFAULT_SERVER_PORT             5000
 
 /* General utility functions */
 unsigned int current_time();

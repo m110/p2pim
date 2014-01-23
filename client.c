@@ -6,7 +6,6 @@
 #include "p2pim.h"
 #include "net.h"
 #include "structs_common.h"
-#include <ncurses.h>
 
 int main(int argc, char **argv) {
     if (argc != 3) {
@@ -16,26 +15,18 @@ int main(int argc, char **argv) {
 
     register_opcodes();
 
-    /* Init NCURSES */
-    initscr();
-    keypad(stdscr, TRUE);
-    printw("Hello!\n");
-    refresh();
-
     char *host = argv[1];
     char *peer_id = argv[2];
 
     struct addrinfo *conninfo;
 
-    struct peer server = {
-        .id = "server",
-        .sockaddr = *conninfo->ai_addr
-    };
+    struct peer server = { .id = "server" };
 
     int socket;
     struct packet_context p_ctx;
 
-    socket = udp_connect(host, SERVER_PORT, &conninfo);
+    socket = udp_connect(host, DEFAULT_SERVER_PORT, &conninfo);
+    server.sockaddr = *conninfo->ai_addr;
 
     prepare_ctx(&p_ctx, CLI_REGISTER, peer_id);
     packet_send(socket, &server, &p_ctx);
@@ -45,18 +36,7 @@ int main(int argc, char **argv) {
     prepare_ctx(&p_ctx, CLI_HEARTBEAT, "");
     packet_send(socket, &server, &p_ctx);
 
-    //udp_recv(socket, &srv, packet);
-    //printw("Server response: %s\n",  packet);
-    refresh();
-/*    while (1) {
-        scanf("%d%s", &opcode, message);
-        bytes = udp_send(socket, conninfo, opcode, message);
-    }*/
-
     close(socket);
-
-    getch();
-    endwin();
 
     return 0;
 }

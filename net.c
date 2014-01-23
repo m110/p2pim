@@ -29,9 +29,10 @@ unsigned short get_port(struct sockaddr *sa) {
 }
 
 /* Bind UDP socket on local host */
-int udp_bind(const char *port, struct addrinfo **conninfo) {
+int udp_bind(unsigned short port, struct addrinfo **conninfo) {
     int sockfd, rv;
     struct addrinfo *servinfo;
+    char service[6];
 
     /* Initialize hints structure */
     struct addrinfo hints;
@@ -40,7 +41,10 @@ int udp_bind(const char *port, struct addrinfo **conninfo) {
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_flags = AI_PASSIVE;
 
-    if ((rv = getaddrinfo(NULL, port, &hints, &servinfo)) != 0) {
+    /* Set service (port) */
+    sprintf(service, "%u", port);
+
+    if ((rv = getaddrinfo(NULL, service, &hints, &servinfo)) != 0) {
         fprintf(stderr, "udp_bind getaddrinfo: %s\n", gai_strerror(rv));
         exit(100);
     }
@@ -75,9 +79,10 @@ int udp_bind(const char *port, struct addrinfo **conninfo) {
 }
 
 /* Get given UDP socket */
-int udp_connect(const char *host, const char *port, struct addrinfo **conninfo) {
+int udp_connect(const char *host, unsigned short port, struct addrinfo **conninfo) {
     int sockfd, rv;
     struct addrinfo *servinfo;
+    char service[6];
 
     /* Initialize hints structure */
     struct addrinfo hints;
@@ -85,7 +90,10 @@ int udp_connect(const char *host, const char *port, struct addrinfo **conninfo) 
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_DGRAM;
 
-    if ((rv = getaddrinfo(host, port, &hints, &servinfo)) != 0) {
+    /* Set service (port) */
+    sprintf(service, "%u", port);
+
+    if ((rv = getaddrinfo(host, service, &hints, &servinfo)) != 0) {
         fprintf(stderr, "udp_connect getaddrinfo: %s\n", gai_strerror(rv));
         exit(200);
     }
@@ -146,6 +154,7 @@ int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
     char packet[MAX_PACKET_SIZE];
 
     // TODO pack with TPL
+    strncpy(packet, p_ctx->message, MAX_PACKET_SIZE);
 
     return udp_send(socket, &peer->sockaddr, packet);
 }
@@ -165,7 +174,7 @@ int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx) {
     port = get_port((struct sockaddr *) &sockaddr);
 
     // TODO unpack with TPL
-    // p_ctx->opcode = ...
+    p_ctx->opcode = CLI_HEARTBEAT;
     // strncpy(p_ctx->message, packet, ...
 
     *peer = create_peer("tmp", address, port, (struct sockaddr *) &sockaddr);

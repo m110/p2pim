@@ -1,9 +1,9 @@
 
-CFLAGS = -Wall -g -O3 -std=c11 -D_POSIX_SOURCE
+CFLAGS = -W -Wall -Werror -g -O3 -std=c11 -D_POSIX_SOURCE -D_POSIX_C_SOURCE=200809L
 LDFLAGS = -lpthread
 
-SHARED_HEADERS = p2pim.h structs_common.h net.h opcodes.h
-SHARED_OBJS = p2pim.c structs_common.c net.c opcodes.c
+SHARED_HEADERS = p2pim.h structs_common.h net.h opcodes.h tpl/tpl.h
+SHARED_OBJS = p2pim.c structs_common.c net.c opcodes.c tpl/tpl.c
 
 CLIENT = client
 CLIENT_HEADERS = $(SHARED_HEADERS) opcodes_client.h

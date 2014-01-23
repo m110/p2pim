@@ -5,7 +5,7 @@
 
 int prepare_ctx(struct packet_context *p_ctx, enum opcode opcode, char *message) {
     p_ctx->opcode = opcode;
-    strncpy(p_ctx->message, message, MAX_MESSAGE_LEN);
+    p_ctx->message = strdup(message);
     return 0;
 }
 
@@ -151,7 +151,7 @@ int udp_recv(int socket, struct sockaddr *sockaddr, void *data) {
 /* Send packet to peer */
 int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
     void *data;
-    size_t data_size = MAX_PACKET_SIZE;
+    size_t data_size;
     tpl_node *packet;
 
     packet = tpl_map("S(is)", p_ctx);
@@ -159,13 +159,14 @@ int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
     tpl_dump(packet, TPL_MEM, &data, &data_size);
     tpl_free(packet);
 
+    free(p_ctx->message);
+
     return udp_send(socket, &peer->sockaddr, data);
 }
 
 /* Receive packet from peer */
 int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx) {
-    char data[MAX_PACKET_SIZE];
-    size_t data_size = MAX_PACKET_SIZE;
+    char *data;
     tpl_node *packet;
     struct sockaddr_storage sockaddr;
     int bytes;
@@ -174,16 +175,15 @@ int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx) {
     unsigned short port;
 
     bytes = udp_recv(socket, (struct sockaddr *) &sockaddr, &data);
-
     get_address((struct sockaddr *) &sockaddr, address);
     port = get_port((struct sockaddr *) &sockaddr);
 
     packet = tpl_map("S(is)", p_ctx);
-    tpl_load(packet, TPL_MEM, data, data_size);
+    tpl_load(packet, TPL_MEM|TPL_EXCESS_OK, data, bytes);
     tpl_unpack(packet, 0);
     tpl_free(packet);
 
-    *peer = create_peer("tmp", address, port, (struct sockaddr *) &sockaddr);
+    *peer = create_peer("temporary", address, port, (struct sockaddr *) &sockaddr);
 
     return bytes;
 }

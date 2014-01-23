@@ -18,7 +18,7 @@ struct peer;
 
 struct packet_context {
     enum opcode opcode;
-    char message[MAX_MESSAGE_LEN];
+    char *message;
 };
 
 int prepare_ctx(struct packet_context *p_ctx, enum opcode opcode, char *message);

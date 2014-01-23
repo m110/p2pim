@@ -1,6 +1,7 @@
 #include "p2pim.h"
 #include "structs_common.h"
 #include "net.h"
+#include "tpl/tpl.h"
 
 int prepare_ctx(struct packet_context *p_ctx, enum opcode opcode, char *message) {
     p_ctx->opcode = opcode;
@@ -121,11 +122,11 @@ int udp_connect(const char *host, unsigned short port, struct addrinfo **conninf
     return sockfd;
 }
 
-int udp_send(int socket, struct sockaddr *sockaddr, const char *message) {
+int udp_send(int socket, struct sockaddr *sockaddr, void *data) {
     int bytes;
     socklen_t addr_len = sizeof *sockaddr;
 
-    if ((bytes = sendto(socket, message, strlen(message), 0,
+    if ((bytes = sendto(socket, data, MAX_PACKET_SIZE, 0,
              sockaddr, addr_len)) == -1) {
         perror("udp_send sendto");
         exit(300);
@@ -134,48 +135,53 @@ int udp_send(int socket, struct sockaddr *sockaddr, const char *message) {
     return bytes;
 }
 
-int udp_recv(int socket, struct sockaddr *sockaddr, char *packet) {
+int udp_recv(int socket, struct sockaddr *sockaddr, void *data) {
     int bytes;
     socklen_t addr_len = sizeof *sockaddr;
 
-    if ((bytes = recvfrom(socket, packet, MAX_PACKET_SIZE-1, 0,
+    if ((bytes = recvfrom(socket, data, MAX_PACKET_SIZE-1, 0,
             sockaddr, &addr_len)) == -1) {
         perror("udp_recv recvfrom");
         exit(400);
     }
-
-    packet[bytes] = '\0';
 
     return bytes;
 }
 
 /* Send packet to peer */
 int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
-    char packet[MAX_PACKET_SIZE];
+    void *data;
+    size_t data_size = MAX_PACKET_SIZE;
+    tpl_node *packet;
 
-    // TODO pack with TPL
-    strncpy(packet, p_ctx->message, MAX_PACKET_SIZE);
+    packet = tpl_map("S(is)", p_ctx);
+    tpl_pack(packet, 0);
+    tpl_dump(packet, TPL_MEM, &data, &data_size);
+    tpl_free(packet);
 
-    return udp_send(socket, &peer->sockaddr, packet);
+    return udp_send(socket, &peer->sockaddr, data);
 }
 
 /* Receive packet from peer */
 int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx) {
-    char packet[MAX_PACKET_SIZE];
+    char data[MAX_PACKET_SIZE];
+    size_t data_size = MAX_PACKET_SIZE;
+    tpl_node *packet;
     struct sockaddr_storage sockaddr;
     int bytes;
 
     char address[INET6_ADDRSTRLEN];
     unsigned short port;
 
-    bytes = udp_recv(socket, (struct sockaddr *) &sockaddr, packet);
+    bytes = udp_recv(socket, (struct sockaddr *) &sockaddr, &data);
 
     get_address((struct sockaddr *) &sockaddr, address);
     port = get_port((struct sockaddr *) &sockaddr);
 
-    // TODO unpack with TPL
-    p_ctx->opcode = CLI_HEARTBEAT;
-    // strncpy(p_ctx->message, packet, ...
+    packet = tpl_map("S(is)", p_ctx);
+    tpl_load(packet, TPL_MEM, data, data_size);
+    tpl_unpack(packet, 0);
+    tpl_free(packet);
 
     *peer = create_peer("tmp", address, port, (struct sockaddr *) &sockaddr);
 

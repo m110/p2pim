@@ -31,32 +31,31 @@ int main(int argc, char **argv) {
     int socket = udp_bind(port, &conninfo);
     printf("Server listening on port %d...\n", port);
 
+    int status;
     struct peer client;
     struct packet_context p_ctx;
+    struct opcode_context o_ctx;
 
     for (;;) {
         packet_recv(socket, &client, &p_ctx);
 
-        printf("Got opcode: %d with message: %s from %s:%d\n", 
-                p_ctx.opcode, p_ctx.message, client.public_addr.address,
-                client.public_addr.port);
+        o_ctx.p_ctx = &p_ctx;
+        o_ctx.list = &clients;
+        o_ctx.peer = &client;
+        o_ctx.node = get_node(clients, &client.public_addr);
 
-        struct opcode_context o_ctx = { .p_ctx = &p_ctx, .list = &clients };
-        struct node *node = get_node(clients, &client.public_addr);
+        printf("Peer from %s:%d (%s) ", client.public_addr.address,
+                client.public_addr.port,
+                o_ctx.node == NULL ? "not found" : "registered");
+        print_packet("sent packet: ", &p_ctx);
 
-        if (node != NULL) {
-            printf("Client found.\n");
-            o_ctx.node = node;
-            handle_opcode(&o_ctx);
-        } else {
-            printf("New client\n");
+        status = handle_opcode(&o_ctx);
 
-            o_ctx.peer = &client;
-            int error = handle_opcode(&o_ctx);
-            if (error) {
-                printf("handle_opcode error: %s\n", status_messages[error]);
-                // TODO send error message
-            }
+        prepare_status(&p_ctx, status);
+        packet_send(socket, &client, &p_ctx);
+
+        if (status) {
+            printf("handle_opcode error: %s\n", status_messages[status]);
         }
     }
 

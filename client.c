@@ -25,13 +25,15 @@ int main(int argc, char **argv) {
 
     socket = udp_connect(host, DEFAULT_SERVER_PORT, &server.sockaddr);
 
-    prepare_ctx(&p_ctx, CLI_REGISTER, peer_id);
-    packet_send(socket, &server, &p_ctx);
+    prepare_packet(&p_ctx, CLIENT_REGISTER, peer_id);
+    packet_dialog(socket, &server, &p_ctx);
+    print_packet("Server response: ", &p_ctx);
 
     sleep(1);
 
-    prepare_ctx(&p_ctx, CLI_HEARTBEAT, "");
-    packet_send(socket, &server, &p_ctx);
+    prepare_packet(&p_ctx, CLIENT_HEARTBEAT, "");
+    packet_dialog(socket, &server, &p_ctx);
+    print_packet("Server response: ", &p_ctx);
 
     close(socket);
 

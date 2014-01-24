@@ -53,8 +53,8 @@ int handle_list(struct opcode_context *ctx) {
 }
 
 void register_opcodes() {
-    opcode_actions[CLI_REGISTER] = handle_register;
-    opcode_actions[CLI_HEARTBEAT] = handle_heartbeat;
-    opcode_actions[CLI_CLOSE] = handle_close;
-    opcode_actions[CLI_LIST] = handle_list;
+    opcode_actions[CLIENT_REGISTER] = handle_register;
+    opcode_actions[CLIENT_HEARTBEAT] = handle_heartbeat;
+    opcode_actions[CLIENT_CLOSE] = handle_close;
+    opcode_actions[CLIENT_LIST] = handle_list;
 }

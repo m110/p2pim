@@ -8,5 +8,4 @@ int handle_info(struct opcode_context *ctx) {
 }
 
 void register_opcodes() {
-    opcode_actions[SRV_INFO] = handle_info;
 }

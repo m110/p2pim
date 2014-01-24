@@ -10,7 +10,7 @@ int add_node(struct node **head, struct peer *peer) {
 
     /* Create new node for struct peer */
     struct node *node = malloc(sizeof(struct node));
-    node->peer = peer;
+    node->peer = *peer;
     node->time = current_time();
     node->next = NULL;
 
@@ -57,8 +57,8 @@ int delete_node(struct node **head, struct node *node) {
  */
 struct node* get_node(struct node *head, struct net_location *location) {
     for (struct node *node = head; node != NULL; node = node->next) {
-        if (strcmp(node->peer->public_addr.address, location->address) == 0 &&
-            node->peer->public_addr.port == location->port) {
+        if (strcmp(node->peer.public_addr.address, location->address) == 0 &&
+            node->peer.public_addr.port == location->port) {
             return node;
         }
     }
@@ -72,7 +72,7 @@ struct node* get_node(struct node *head, struct net_location *location) {
  */
 struct node* get_node_by_id(struct node *head, char *peer_id) {
     for (struct node *node = head; node != NULL; node = node->next) {
-        if (strcmp(node->peer->id, peer_id) == 0) {
+        if (strcmp(node->peer.id, peer_id) == 0) {
             return node;
         }
     }

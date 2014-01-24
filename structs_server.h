@@ -6,7 +6,7 @@
 #define peer_DURATION 30
 
 struct node {
-    struct peer *peer;
+    struct peer peer;
     unsigned int time;
     struct node *next;
 };

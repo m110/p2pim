@@ -6,13 +6,16 @@ int handle_register(struct opcode_context *ctx) {
     struct peer *peer = ctx->peer;
     assert(peer != NULL);
 
-    if (get_node_by_id(ctx->list, peer->id) == NULL) {
+    /* Set new ID, because it's set to 'temporary' */
+    strncpy(peer->id, ctx->p_ctx->message, MAX_PEER_ID_LEN);
+
+    if (get_node_by_id(*ctx->list, peer->id) == NULL) {
         printf("Register user %s from %s:%d\n",
                 peer->id, 
                 peer->public_addr.address, 
                 peer->public_addr.port);
 
-        return add_node(&ctx->list, peer);
+        return add_node(ctx->list, peer);
     } else {
         return ERROR_PEER_ID_EXISTS;
     }
@@ -36,7 +39,7 @@ int handle_close(struct opcode_context *ctx) {
         return ERROR_NOT_REGISTERED;
     }
 
-    delete_node(&ctx->list, node);
+    delete_node(ctx->list, node);
     return 0;
 }
 

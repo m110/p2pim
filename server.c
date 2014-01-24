@@ -3,10 +3,16 @@
  * Provides UDP hole punching.
  */
 
+#include <signal.h>
 #include "p2pim.h"
 #include "net.h"
 #include "opcodes_server.h"
 #include "structs_server.h"
+
+void sigint_callback(int signum) {
+    printf("Good bye.");
+    exit(signum);
+}
 
 int main(int argc, char **argv) {
     unsigned short port = DEFAULT_SERVER_PORT;
@@ -14,6 +20,7 @@ int main(int argc, char **argv) {
         port = atoi(argv[1]);
     }
 
+    signal(SIGINT, sigint_callback);
     register_opcodes();
 
     /* Linked list of clients. */
@@ -34,7 +41,7 @@ int main(int argc, char **argv) {
                 p_ctx.opcode, p_ctx.message, client.public_addr.address,
                 client.public_addr.port);
 
-        struct opcode_context o_ctx = { .p_ctx = &p_ctx, .list = clients };
+        struct opcode_context o_ctx = { .p_ctx = &p_ctx, .list = &clients };
         struct node *node = get_node(clients, &client.public_addr);
 
         if (node != NULL) {

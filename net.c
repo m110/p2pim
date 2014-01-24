@@ -1,7 +1,7 @@
 #include "p2pim.h"
 #include "structs_common.h"
 #include "net.h"
-#include "tpl/tpl.h"
+#include "include/tpl.h"
 
 int prepare_ctx(struct packet_context *p_ctx, enum opcode opcode, char *message) {
     p_ctx->opcode = opcode;
@@ -166,7 +166,7 @@ int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
 
 /* Receive packet from peer */
 int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx) {
-    char *data;
+    char *data[MAX_PACKET_SIZE];
     tpl_node *packet;
     struct sockaddr_storage sockaddr;
     int bytes;

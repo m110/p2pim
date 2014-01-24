@@ -4,29 +4,48 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-CC	Makefile	/^CC = gcc $(CFLAGS) $(LDFLAGS)$/;"	m
-CFLAGS	Makefile	/^CFLAGS = -Wall -g -O3 -std=c11 -D_POSIX_SOURCE$/;"	m
+CC	Makefile	/^CC = gcc $(CFLAGS)$/;"	m
+CFLAGS	Makefile	/^CFLAGS = -W -Wall -Werror -g -O3 -std=c11 -D_POSIX_SOURCE -D_POSIX_C_SOURCE=200809L$/;"	m
 CLIENT	Makefile	/^CLIENT = client$/;"	m
-CLIENT_HEADERS	Makefile	/^CLIENT_HEADERS = p2pim.h structs_common.h net.h opcodes.h opcodes_client.h$/;"	m
-CLIENT_OBJS	Makefile	/^CLIENT_OBJS = $(CLIENT).c p2pim.c structs_common.c net.c opcodes.c opcodes_client.c$/;"	m
+CLIENT_HEADERS	Makefile	/^CLIENT_HEADERS = $(SHARED_HEADERS) opcodes_client.h$/;"	m
+CLIENT_OBJS	Makefile	/^CLIENT_OBJS = $(CLIENT).c $(SHARED_OBJS) opcodes_client.c$/;"	m
 CLI_CLOSE	opcodes.h	/^    CLI_CLOSE        =   0x002,$/;"	e	enum:opcode
 CLI_HEARTBEAT	opcodes.h	/^    CLI_HEARTBEAT    =   0x001,$/;"	e	enum:opcode
 CLI_LIST	opcodes.h	/^    CLI_LIST         =   0x003,$/;"	e	enum:opcode
 CLI_REGISTER	opcodes.h	/^    CLI_REGISTER     =   0x000,$/;"	e	enum:opcode
+DEFAULT_SERVER_PORT	p2pim.h	13;"	d
 ERROR_NOT_REGISTERED	opcodes.h	/^    ERROR_NOT_REGISTERED        =   0x002,$/;"	e	enum:opcode_status
 ERROR_PEER_ID_EXISTS	opcodes.h	/^    ERROR_PEER_ID_EXISTS        =   0x003$/;"	e	enum:opcode_status
 ERROR_UNKNOWN	opcodes.h	/^    ERROR_UNKNOWN               =   0x001,$/;"	e	enum:opcode_status
-LDFLAGS	Makefile	/^LDFLAGS = -lpthread$/;"	m
+LDFLAGS	Makefile	/^LDFLAGS = -ltpl$/;"	m
 MAX_MESSAGE_LEN	net.h	14;"	d
 MAX_PACKET_SIZE	net.h	13;"	d
 MAX_PEER_ID_LEN	structs_common.h	6;"	d
 OPCODES_COUNT	opcodes.h	4;"	d
 SERVER	Makefile	/^SERVER = server$/;"	m
-SERVER_HEADERS	Makefile	/^SERVER_HEADERS = p2pim.h structs_common.h net.h structs_server.h opcodes.h opcodes_server.h$/;"	m
-SERVER_OBJS	Makefile	/^SERVER_OBJS = $(SERVER).c p2pim.c structs_common.c net.c structs_server.c opcodes_server.c opcodes.c$/;"	m
-SERVER_PORT	p2pim.h	13;"	d
+SERVER_HEADERS	Makefile	/^SERVER_HEADERS = $(SHARED_HEADERS) structs_server.h opcodes_server.h$/;"	m
+SERVER_OBJS	Makefile	/^SERVER_OBJS = $(SERVER).c $(SHARED_OBJS) structs_server.c opcodes_server.c$/;"	m
+SHARED_HEADERS	Makefile	/^SHARED_HEADERS = p2pim.h structs_common.h net.h opcodes.h tpl\/tpl.h$/;"	m
+SHARED_OBJS	Makefile	/^SHARED_OBJS = p2pim.c structs_common.c net.c opcodes.c$/;"	m
 SRV_INFO	opcodes.h	/^    SRV_INFO         =   0x004$/;"	e	enum:opcode
 STATUS_SUCCESS	opcodes.h	/^    STATUS_SUCCESS              =   0x000,$/;"	e	enum:opcode_status
+TPL_API	include/tpl.h	47;"	d
+TPL_API	include/tpl.h	50;"	d
+TPL_API	include/tpl.h	52;"	d
+TPL_API	include/tpl.h	56;"	d
+TPL_DATAPEEK	include/tpl.h	66;"	d
+TPL_EXCESS_OK	include/tpl.h	63;"	d
+TPL_FD	include/tpl.h	64;"	d
+TPL_FILE	include/tpl.h	60;"	d
+TPL_FXLENS	include/tpl.h	67;"	d
+TPL_GATHER_BLOCKING	include/tpl.h	72;"	d
+TPL_GATHER_MEM	include/tpl.h	74;"	d
+TPL_GATHER_NONBLOCKING	include/tpl.h	73;"	d
+TPL_GETSIZE	include/tpl.h	68;"	d
+TPL_H	include/tpl.h	25;"	d
+TPL_MEM	include/tpl.h	61;"	d
+TPL_PREALLOCD	include/tpl.h	62;"	d
+TPL_UFREE	include/tpl.h	65;"	d
 _NET_H	net.h	2;"	d
 _OPCODES_CLIENT_H	opcodes_client.h	2;"	d
 _OPCODES_H	opcodes.h	2;"	d
@@ -35,11 +54,18 @@ _P2PIM_H	p2pim.h	2;"	d
 _STRUCTS_COMMON_H	structs_common.h	2;"	d
 _STRUCTS_SERVER_H	structs_server.h	2;"	d
 add_node	structs_server.c	/^int add_node(struct node **head, struct peer *peer) {$/;"	f
+addr	include/tpl.h	/^    void *addr;$/;"	m	struct:tpl_bin
+addr	include/tpl.h	/^    void *addr;$/;"	m	struct:tpl_node
 address	structs_common.h	/^    char address[INET6_ADDRSTRLEN];$/;"	m	struct:net_location
+children	include/tpl.h	/^    struct tpl_node *children;   \/* my children; linked-list *\/$/;"	m	struct:tpl_node	typeref:struct:tpl_node::tpl_node
 create_peer	structs_common.c	/^struct peer create_peer(char *id, char *address, unsigned short port, struct sockaddr *sockaddr) {$/;"	f
 current_time	p2pim.c	/^unsigned int current_time() {$/;"	f
+data	include/tpl.h	/^    void *data;                  \/* r:tpl_root_data*. A:tpl_atyp*. ow:szof type *\/$/;"	m	struct:tpl_node
 delete_node	structs_server.c	/^int delete_node(struct node **head, struct node *node) {$/;"	f
+fatal	include/tpl.h	/^    tpl_fatal_fcn *fatal;$/;"	m	struct:tpl_hook_t
+free	include/tpl.h	/^    tpl_free_fcn *free;$/;"	m	struct:tpl_hook_t
 free_node	structs_server.c	/^void free_node(struct node *node) {$/;"	f
+gather_max	include/tpl.h	/^    size_t gather_max;$/;"	m	struct:tpl_hook_t
 get_address	net.c	/^void get_address(struct sockaddr *sa, char *address) {$/;"	f
 get_node	structs_server.c	/^struct node* get_node(struct node *head, struct net_location *location) {$/;"	f
 get_node_by_id	structs_server.c	/^struct node* get_node_by_id(struct node *head, char *peer_id) {$/;"	f
@@ -51,14 +77,20 @@ handle_list	opcodes_server.c	/^int handle_list(struct opcode_context *ctx) {$/;"
 handle_opcode	opcodes.c	/^inline int handle_opcode(struct opcode_context *ctx) {$/;"	f
 handle_register	opcodes_server.c	/^int handle_register(struct opcode_context *ctx) {$/;"	f
 id	structs_common.h	/^    char id[MAX_PEER_ID_LEN];$/;"	m	struct:peer
+img	include/tpl.h	/^    char *img;$/;"	m	struct:tpl_gather_t
+len	include/tpl.h	/^    int len;$/;"	m	struct:tpl_gather_t
 list	opcodes_server.h	/^    struct node *list;$/;"	m	struct:opcode_context	typeref:struct:opcode_context::node
 main	client.c	/^int main(int argc, char **argv) {$/;"	f
 main	server.c	/^int main(int argc, char **argv) {$/;"	f
-message	net.h	/^    char message[MAX_MESSAGE_LEN];$/;"	m	struct:packet_context
+malloc	include/tpl.h	/^    tpl_malloc_fcn *malloc;$/;"	m	struct:tpl_hook_t
+message	net.h	/^    char *message;$/;"	m	struct:packet_context
 net_location	structs_common.h	/^struct net_location {$/;"	s
+next	include/tpl.h	/^    struct tpl_node *next,*prev; \/* my siblings (next child of my parent) *\/$/;"	m	struct:tpl_node	typeref:struct:tpl_node::tpl_node
 next	structs_server.h	/^    struct node *next;$/;"	m	struct:node	typeref:struct:node::node
 node	opcodes_server.h	/^    struct node *node;$/;"	m	struct:opcode_context	typeref:struct:opcode_context::node
 node	structs_server.h	/^struct node {$/;"	s
+num	include/tpl.h	/^    int num;                     \/* length of type if its a C array *\/$/;"	m	struct:tpl_node
+oops	include/tpl.h	/^    tpl_print_fcn *oops;$/;"	m	struct:tpl_hook_t
 opcode	net.h	/^    enum opcode opcode;$/;"	m	struct:packet_context	typeref:enum:packet_context::opcode
 opcode	opcodes.h	/^enum opcode {$/;"	g
 opcode_actions	opcodes.c	/^int (*opcode_actions[OPCODES_COUNT]) (struct opcode_context *ctx);$/;"	v
@@ -70,20 +102,41 @@ p_ctx	opcodes_server.h	/^    struct packet_context *p_ctx;$/;"	m	struct:opcode_c
 packet_context	net.h	/^struct packet_context {$/;"	s
 packet_recv	net.c	/^int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx) {$/;"	f
 packet_send	net.c	/^int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {$/;"	f
+parent	include/tpl.h	/^    struct tpl_node *parent;     \/* my parent *\/$/;"	m	struct:tpl_node	typeref:struct:tpl_node::tpl_node
 peer	opcodes_server.h	/^    struct peer *peer;$/;"	m	struct:opcode_context	typeref:struct:opcode_context::peer
 peer	structs_common.h	/^struct peer {$/;"	s
 peer	structs_server.h	/^    struct peer *peer;$/;"	m	struct:node	typeref:struct:node::peer
 peer_DURATION	structs_server.h	6;"	d
 port	structs_common.h	/^    unsigned short port;$/;"	m	struct:net_location
 prepare_ctx	net.c	/^int prepare_ctx(struct packet_context *p_ctx, enum opcode opcode, char *message) {$/;"	f
+prev	include/tpl.h	/^    struct tpl_node *next,*prev; \/* my siblings (next child of my parent) *\/$/;"	m	struct:tpl_node	typeref:struct:tpl_node::
 public_addr	structs_common.h	/^    struct net_location public_addr;$/;"	m	struct:peer	typeref:struct:peer::net_location
+realloc	include/tpl.h	/^    tpl_realloc_fcn *realloc;$/;"	m	struct:tpl_hook_t
 register_opcodes	opcodes_client.c	/^void register_opcodes() {$/;"	f
 register_opcodes	opcodes_server.c	/^void register_opcodes() {$/;"	f
+ser_osz	include/tpl.h	/^    size_t ser_osz;              \/* serialization output size for subtree *\/$/;"	m	struct:tpl_node
 sockaddr	structs_common.h	/^    struct sockaddr sockaddr;$/;"	m	struct:peer	typeref:struct:peer::sockaddr
 status_messages	opcodes.c	/^char* status_messages[] = {$/;"	v
 strdup	p2pim.c	/^char* strdup (const char *s) {$/;"	f
+sz	include/tpl.h	/^    uint32_t sz;$/;"	m	struct:tpl_bin
 time	structs_server.h	/^    unsigned int time;$/;"	m	struct:node
-udp_bind	net.c	/^int udp_bind(const char *port, struct addrinfo **conninfo) {$/;"	f
-udp_connect	net.c	/^int udp_connect(const char *host, const char *port, struct addrinfo **conninfo) {$/;"	f
-udp_recv	net.c	/^int udp_recv(int socket, struct sockaddr *sockaddr, char *packet) {$/;"	f
-udp_send	net.c	/^int udp_send(int socket, struct sockaddr *sockaddr, const char *message) {$/;"	f
+tpl_bin	include/tpl.h	/^typedef struct tpl_bin {$/;"	s
+tpl_bin	include/tpl.h	/^} tpl_bin;$/;"	t	typeref:struct:tpl_bin
+tpl_fatal_fcn	include/tpl.h	/^typedef void (tpl_fatal_fcn)(const char *fmt, ...);$/;"	t
+tpl_free_fcn	include/tpl.h	/^typedef void (tpl_free_fcn)(void *ptr);$/;"	t
+tpl_gather_cb	include/tpl.h	/^typedef int (tpl_gather_cb)(void *img, size_t sz, void *data);$/;"	t
+tpl_gather_t	include/tpl.h	/^typedef struct tpl_gather_t {$/;"	s
+tpl_gather_t	include/tpl.h	/^} tpl_gather_t;$/;"	t	typeref:struct:tpl_gather_t
+tpl_hook_t	include/tpl.h	/^typedef struct tpl_hook_t {$/;"	s
+tpl_hook_t	include/tpl.h	/^} tpl_hook_t;$/;"	t	typeref:struct:tpl_hook_t
+tpl_malloc_fcn	include/tpl.h	/^typedef void *(tpl_malloc_fcn)(size_t sz);$/;"	t
+tpl_node	include/tpl.h	/^typedef struct tpl_node {$/;"	s
+tpl_node	include/tpl.h	/^} tpl_node;$/;"	t	typeref:struct:tpl_node
+tpl_print_fcn	include/tpl.h	/^typedef int (tpl_print_fcn)(const char *fmt, ...);$/;"	t
+tpl_realloc_fcn	include/tpl.h	/^typedef void *(tpl_realloc_fcn)(void *ptr, size_t sz);$/;"	t
+type	include/tpl.h	/^    int type;$/;"	m	struct:tpl_node
+udp_bind	net.c	/^int udp_bind(unsigned short port, struct addrinfo **conninfo) {$/;"	f
+udp_connect	net.c	/^int udp_connect(const char *host, unsigned short port, struct addrinfo **conninfo) {$/;"	f
+udp_recv	net.c	/^int udp_recv(int socket, struct sockaddr *sockaddr, void *data) {$/;"	f
+udp_send	net.c	/^int udp_send(int socket, struct sockaddr *sockaddr, void *data, size_t data_size) {$/;"	f
+uint32_t	include/tpl.h	/^typedef unsigned int uint32_t;$/;"	t

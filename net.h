@@ -28,7 +28,7 @@ void get_address(struct sockaddr *sa, char *address);
 unsigned short get_port(struct sockaddr *sa);
 int udp_bind(unsigned short port, struct addrinfo **conninfo);
 int udp_connect(const char *host, unsigned short port, struct addrinfo **conninfo);
-int udp_send(int socket, struct sockaddr *dest_addr, void *data);
+int udp_send(int socket, struct sockaddr *dest_addr, void *data, size_t data_size);
 int udp_recv(int socket, struct sockaddr *address, void *data);
 int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx);
 int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx);

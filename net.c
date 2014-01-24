@@ -122,11 +122,11 @@ int udp_connect(const char *host, unsigned short port, struct addrinfo **conninf
     return sockfd;
 }
 
-int udp_send(int socket, struct sockaddr *sockaddr, void *data) {
+int udp_send(int socket, struct sockaddr *sockaddr, void *data, size_t data_size) {
     int bytes;
     socklen_t addr_len = sizeof *sockaddr;
 
-    if ((bytes = sendto(socket, data, MAX_PACKET_SIZE, 0,
+    if ((bytes = sendto(socket, data, data_size, 0,
              sockaddr, addr_len)) == -1) {
         perror("udp_send sendto");
         exit(300);
@@ -139,7 +139,7 @@ int udp_recv(int socket, struct sockaddr *sockaddr, void *data) {
     int bytes;
     socklen_t addr_len = sizeof *sockaddr;
 
-    if ((bytes = recvfrom(socket, data, MAX_PACKET_SIZE-1, 0,
+    if ((bytes = recvfrom(socket, data, MAX_PACKET_SIZE, 0,
             sockaddr, &addr_len)) == -1) {
         perror("udp_recv recvfrom");
         exit(400);
@@ -153,6 +153,7 @@ int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
     void *data;
     size_t data_size;
     tpl_node *packet;
+    int bytes;
 
     packet = tpl_map("S(is)", p_ctx);
     tpl_pack(packet, 0);
@@ -161,7 +162,11 @@ int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
 
     free(p_ctx->message);
 
-    return udp_send(socket, &peer->sockaddr, data);
+    bytes = udp_send(socket, &peer->sockaddr, data, data_size);
+
+    free(data);
+
+    return bytes;
 }
 
 /* Receive packet from peer */
@@ -179,7 +184,7 @@ int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx) {
     port = get_port((struct sockaddr *) &sockaddr);
 
     packet = tpl_map("S(is)", p_ctx);
-    tpl_load(packet, TPL_MEM|TPL_EXCESS_OK, data, bytes);
+    tpl_load(packet, TPL_MEM|TPL_PREALLOCD|TPL_EXCESS_OK, data, bytes);
     tpl_unpack(packet, 0);
     tpl_free(packet);
 

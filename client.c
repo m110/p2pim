@@ -18,15 +18,12 @@ int main(int argc, char **argv) {
     char *host = argv[1];
     char *peer_id = argv[2];
 
-    struct addrinfo *conninfo;
-
     struct peer server = { .id = "server" };
 
     int socket;
     struct packet_context p_ctx;
 
-    socket = udp_connect(host, DEFAULT_SERVER_PORT, &conninfo);
-    server.sockaddr = *conninfo->ai_addr;
+    socket = udp_connect(host, DEFAULT_SERVER_PORT, &server.sockaddr);
 
     prepare_ctx(&p_ctx, CLI_REGISTER, peer_id);
     packet_send(socket, &server, &p_ctx);

@@ -80,7 +80,7 @@ int udp_bind(unsigned short port, struct addrinfo **conninfo) {
 }
 
 /* Get given UDP socket */
-int udp_connect(const char *host, unsigned short port, struct addrinfo **conninfo) {
+int udp_connect(const char *host, unsigned short port, struct sockaddr *sockaddr) {
     int sockfd, rv;
     struct addrinfo *servinfo;
     char service[6];
@@ -116,9 +116,10 @@ int udp_connect(const char *host, unsigned short port, struct addrinfo **conninf
         exit(201);
     }
 
+    *sockaddr = *p->ai_addr;
+
     freeaddrinfo(servinfo);
 
-    *conninfo = p;
     return sockfd;
 }
 
@@ -184,7 +185,7 @@ int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx) {
     port = get_port((struct sockaddr *) &sockaddr);
 
     packet = tpl_map("S(is)", p_ctx);
-    tpl_load(packet, TPL_MEM|TPL_PREALLOCD|TPL_EXCESS_OK, data, bytes);
+    tpl_load(packet, TPL_MEM|TPL_PREALLOCD, data, bytes);
     tpl_unpack(packet, 0);
     tpl_free(packet);
 

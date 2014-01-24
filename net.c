@@ -170,7 +170,7 @@ int udp_recv(int socket, struct sockaddr *sockaddr, void *data) {
 
 /* Send packet to peer */
 int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
-    void *data;
+    char *data;
     size_t data_size;
     tpl_node *packet;
     int bytes;

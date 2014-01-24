@@ -14,6 +14,7 @@
 #define MAX_MESSAGE_LEN         512
 
 #define PACKET_TPL_FORMAT       "S(iis)"
+#define LIST_TPL_FORMAT         "A(ssv)"
 
 /* Defined in structs_common.h */
 struct peer;

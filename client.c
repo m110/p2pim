@@ -35,6 +35,12 @@ int main(int argc, char **argv) {
     packet_dialog(socket, &server, &p_ctx);
     print_packet("Server response: ", &p_ctx);
 
+    sleep(1);
+
+    prepare_packet(&p_ctx, CLIENT_LIST, "");
+    packet_dialog(socket, &server, &p_ctx);
+    print_packet("Server response: ", &p_ctx);
+
     close(socket);
 
     return 0;

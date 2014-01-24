@@ -1,7 +1,8 @@
 #ifndef _OPCODES_H
 #define _OPCODES_H
 
-#define OPCODES_COUNT   0x005
+#define OPCODES_COUNT        0x006
+#define RESPONSE_HANDLED    -0x001
 
 /*
  * COMMON_ - opcodes sent by client and server
@@ -14,7 +15,9 @@ enum opcode {
     CLIENT_REGISTER     =   0x001,
     CLIENT_HEARTBEAT    =   0x002,
     CLIENT_CLOSE        =   0x003,
-    CLIENT_LIST         =   0x004
+    CLIENT_LIST         =   0x004,
+
+    SERVER_LIST         =   0x005
 };
 
 enum opcode_status {
@@ -30,6 +33,11 @@ extern char* status_messages[];
 
 /* Opcodes array */
 extern int (*opcode_actions[OPCODES_COUNT]) (struct opcode_context *ctx);
+
+/* Function handling opcode
+ * Should return opcode_status, which will be then sent to the client.
+ * In case of custom response handling, return RESPONSE_HANDLED.
+ * */
 extern int handle_opcode(struct opcode_context *ctx);
 
 void register_opcodes();

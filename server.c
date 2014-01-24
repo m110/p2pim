@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
     for (;;) {
         packet_recv(socket, &client, &p_ctx);
 
+        o_ctx.socket = socket;
         o_ctx.p_ctx = &p_ctx;
         o_ctx.list = &clients;
         o_ctx.peer = &client;
@@ -51,10 +52,10 @@ int main(int argc, char **argv) {
 
         status = handle_opcode(&o_ctx);
 
-        prepare_status(&p_ctx, status);
-        packet_send(socket, &client, &p_ctx);
-
-        if (status) {
+        /* Send status message */
+        if (status > RESPONSE_HANDLED) {
+            prepare_status(&p_ctx, status);
+            packet_send(socket, &client, &p_ctx);
             printf("handle_opcode error: %s\n", status_messages[status]);
         }
     }

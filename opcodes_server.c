@@ -1,6 +1,8 @@
 #include "p2pim.h"
 #include "opcodes.h"
 #include "opcodes_server.h"
+#include "net.h"
+#include "include/tpl.h"
 
 int handle_register(struct opcode_context *ctx) {
     struct peer *peer = ctx->peer;
@@ -49,7 +51,36 @@ int handle_list(struct opcode_context *ctx) {
         return ERROR_NOT_REGISTERED;
     }
 
-    return 0;
+    struct packet_context p_ctx;
+    char *data;
+    size_t data_size;
+    tpl_node *packet;
+
+    /* List data */
+    char *peer_id = NULL, *peer_address = NULL;
+    unsigned short peer_port = 0;
+
+    /* Pack the list */
+    packet = tpl_map(LIST_TPL_FORMAT, peer_id, peer_address, &peer_port);
+    for (struct node *n = *ctx->list; n != NULL; n = n->next) {
+        struct peer *peer = &n->peer;
+        // TODO check timeout
+        peer_id = peer->id;
+        peer_address = peer->public_addr.address;
+        peer_port = peer->public_addr.port;
+        tpl_pack(packet, 1);
+    }
+    tpl_dump(packet, TPL_MEM, &data, &data_size);
+    tpl_free(packet);
+
+    /* Prepare and send the list */
+    prepare_packet(&p_ctx, SERVER_LIST, data);
+    packet_send(ctx->socket, ctx->peer, &p_ctx);
+
+    /* Free buffer allocated by TPL */
+    free(data);
+
+    return RESPONSE_HANDLED;
 }
 
 void register_opcodes() {

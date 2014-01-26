@@ -61,7 +61,7 @@ int handle_list(struct opcode_context *ctx) {
     unsigned short peer_port = 0;
 
     /* Pack the list */
-    packet = tpl_map(LIST_TPL_FORMAT, peer_id, peer_address, &peer_port);
+    packet = tpl_map(LIST_TPL_FORMAT, &peer_id, &peer_address, &peer_port);
     for (struct node *n = *ctx->list; n != NULL; n = n->next) {
         struct peer *peer = &n->peer;
         // TODO check timeout
@@ -84,6 +84,7 @@ int handle_list(struct opcode_context *ctx) {
 }
 
 void register_opcodes() {
+    opcode_actions[COMMON_STATUS] = handle_status;
     opcode_actions[CLIENT_REGISTER] = handle_register;
     opcode_actions[CLIENT_HEARTBEAT] = handle_heartbeat;
     opcode_actions[CLIENT_CLOSE] = handle_close;

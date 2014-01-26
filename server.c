@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
         if (status > RESPONSE_HANDLED) {
             prepare_status(&p_ctx, status);
             packet_send(socket, &client, &p_ctx);
-            printf("handle_opcode error: %s\n", status_messages[status]);
+            printf("handle_opcode result: %d \"%s\"\n", status, status_messages[status]);
         }
     }
 

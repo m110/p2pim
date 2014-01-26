@@ -42,4 +42,7 @@ extern int handle_opcode(struct opcode_context *ctx);
 
 void register_opcodes();
 
+/* Common opcode handlers */
+int handle_status(struct opcode_context *ctx);
+
 #endif

@@ -20,5 +20,12 @@ char* status_messages[] = {
 
 inline int handle_opcode(struct opcode_context *ctx) {
     assert(ctx != NULL);
+    assert(ctx->p_ctx != NULL);
+    assert(opcode_actions[ctx->p_ctx->opcode] != NULL);
     return (*opcode_actions[ctx->p_ctx->opcode])(ctx);
+}
+
+int handle_status(struct opcode_context *ctx) {
+    print_packet("handle_status: ", ctx->p_ctx);
+    return 0;
 }

@@ -61,7 +61,7 @@ int prepare_packet_status(struct packet_context *p_ctx, enum opcode_status statu
 
 void print_packet(char *prefix, struct packet_context *p_ctx) {
     printf("%s[opcode: %d status: %d message: <%s> (len: %d)]", prefix,
-            p_ctx->opcode, p_ctx->status, p_ctx->message, p_ctx->message_len);
+            p_ctx->opcode, p_ctx->status, p_ctx->message, (int) p_ctx->message_len);
 
     if (p_ctx->opcode == COMMON_STATUS) {
         printf(", \"%s\"", status_messages[p_ctx->status]);
@@ -69,8 +69,17 @@ void print_packet(char *prefix, struct packet_context *p_ctx) {
 
     printf("\n");
 }
-void print_packet_dump(struct packet_context *p_ctx) { int i; for (i = 0; i < (int) p_ctx->message_len; i++) {
-        printf("%c", p_ctx->message[i]);
+
+void dump_buffer(char *message, size_t message_len) {
+    int i;
+
+    if (message == NULL) {
+        printf("NULL\n");
+        return;
+    }
+
+    for (i = 0; i < (int) message_len; i++) {
+        printf("%c", message[i]);
     }
 
     printf("\n");
@@ -155,5 +164,4 @@ int packet_dialog(int socket, struct peer *peer, struct packet_context *p_ctx) {
     packet_send(socket, peer, p_ctx);
     return packet_recv(socket, &dummy, p_ctx);
 }
-
 

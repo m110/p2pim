@@ -5,6 +5,8 @@
 
 #include "p2pim.h"
 #include "net.h"
+#include "opcodes.h"
+#include "packet.h"
 #include "structs_common.h"
 #include "opcodes_client.h"
 
@@ -27,19 +29,19 @@ int main(int argc, char **argv) {
 
     socket = udp_connect(host, DEFAULT_SERVER_PORT, &server.sockaddr);
 
-    prepare_packet(&p_ctx, CLIENT_REGISTER, peer_id);
+    prepare_packet_message(&p_ctx, CLIENT_REGISTER, peer_id);
     packet_dialog(socket, &server, &p_ctx);
     handle_opcode(&o_ctx);
 
     sleep(1);
 
-    prepare_packet(&p_ctx, CLIENT_HEARTBEAT, "");
+    prepare_packet_simple(&p_ctx, CLIENT_HEARTBEAT);
     packet_dialog(socket, &server, &p_ctx);
     handle_opcode(&o_ctx);
 
     sleep(1);
 
-    prepare_packet(&p_ctx, CLIENT_LIST, "");
+    prepare_packet_simple(&p_ctx, CLIENT_LIST);
     packet_dialog(socket, &server, &p_ctx);
     handle_opcode(&o_ctx);
 

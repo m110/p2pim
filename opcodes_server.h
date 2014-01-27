@@ -2,6 +2,10 @@
 #define _OPCODES_SERVER_H
 
 #include "structs_server.h"
+#include "net.h"
+#include "opcodes.h"
+#include "packet.h"
+#include "include/tpl.h"
 
 struct opcode_context {
     int socket;

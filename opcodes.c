@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "net.h"
+#include "packet.h"
 #include "opcodes.h"
 
 #ifdef CLIENT

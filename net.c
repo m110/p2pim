@@ -1,32 +1,4 @@
-#include "p2pim.h"
-#include "structs_common.h"
 #include "net.h"
-#include "include/tpl.h"
-
-int prepare_packet(struct packet_context *p_ctx, enum opcode opcode, char *message) {
-    p_ctx->opcode = opcode;
-    p_ctx->status = STATUS_SUCCESS;
-    p_ctx->message = strdup(message);
-    return 0;
-}
-
-int prepare_status(struct packet_context *p_ctx, enum opcode_status status) {
-    p_ctx->opcode = COMMON_STATUS;
-    p_ctx->status = status;
-    p_ctx->message = NULL;
-    return 0;
-}
-
-void print_packet(char *prefix, struct packet_context *p_ctx) {
-    printf("%s[opcode: %d status: %d message: <%s>]", prefix,
-            p_ctx->opcode, p_ctx->status, p_ctx->message);
-
-    if (p_ctx->opcode == COMMON_STATUS) {
-        printf(", \"%s\"", status_messages[p_ctx->status]);
-    }
-
-    printf("\n");
-}
 
 /* Get IP address from sockadd struct */
 void get_address(struct sockaddr *sa, char *address) {
@@ -166,63 +138,5 @@ int udp_recv(int socket, struct sockaddr *sockaddr, void *data) {
     }
 
     return bytes;
-}
-
-/* Send packet to peer */
-int packet_send(int socket, struct peer *peer, struct packet_context *p_ctx) {
-    char *data;
-    size_t data_size;
-    tpl_node *packet;
-    int bytes;
-
-    /* Pack the packet */
-    packet = tpl_map(PACKET_TPL_FORMAT, p_ctx);
-    tpl_pack(packet, 0);
-    tpl_dump(packet, TPL_MEM, &data, &data_size);
-    tpl_free(packet);
-
-    /* Preparing packet allocates this buffer, so free it when it's packed  */
-    free(p_ctx->message);
-
-    /* Send packed data through UDP */
-    bytes = udp_send(socket, &peer->sockaddr, data, data_size);
-
-    /* Free buffer allocated by TPL */
-    free(data);
-
-    return bytes;
-}
-
-/* Receive packet from peer */
-int packet_recv(int socket, struct peer *peer, struct packet_context *p_ctx) {
-    char data[MAX_PACKET_SIZE];
-    tpl_node *packet;
-    struct sockaddr_storage sockaddr;
-    int bytes;
-
-    char address[INET6_ADDRSTRLEN];
-    unsigned short port;
-
-    /* Get data through UDP and save peer's net location */
-    bytes = udp_recv(socket, (struct sockaddr *) &sockaddr, &data);
-    get_address((struct sockaddr *) &sockaddr, address);
-    port = get_port((struct sockaddr *) &sockaddr);
-
-    /* Unpack the data to context structure */
-    packet = tpl_map(PACKET_TPL_FORMAT, p_ctx);
-    tpl_load(packet, TPL_MEM|TPL_PREALLOCD, data, bytes);
-    tpl_unpack(packet, 0);
-    tpl_free(packet);
-
-    *peer = create_peer("temporary", address, port, (struct sockaddr *) &sockaddr);
-
-    return bytes;
-}
-
-/* Send and receive packet */
-int packet_dialog(int socket, struct peer *peer, struct packet_context *p_ctx) {
-    struct peer dummy;
-    packet_send(socket, peer, p_ctx);
-    return packet_recv(socket, &dummy, p_ctx);
 }
 

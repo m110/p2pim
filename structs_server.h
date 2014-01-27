@@ -2,6 +2,7 @@
 #define _STRUCTS_SERVER_H
 
 #include "structs_common.h"
+#include "opcodes.h"
 
 #define peer_DURATION 30
 

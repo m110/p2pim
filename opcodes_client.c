@@ -1,8 +1,5 @@
 #include "p2pim.h"
-#include "structs_common.h"
-#include "opcodes.h"
 #include "opcodes_client.h"
-#include "include/tpl.h"
 
 int handle_list(struct opcode_context *ctx) {
     tpl_node *packet;

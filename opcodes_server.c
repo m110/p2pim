@@ -1,8 +1,5 @@
 #include "p2pim.h"
-#include "opcodes.h"
 #include "opcodes_server.h"
-#include "net.h"
-#include "include/tpl.h"
 
 int handle_register(struct opcode_context *ctx) {
     struct peer *peer = ctx->peer;
@@ -74,7 +71,7 @@ int handle_list(struct opcode_context *ctx) {
     tpl_free(packet);
 
     /* Prepare and send the list */
-    prepare_packet(&p_ctx, SERVER_LIST, data);
+    prepare_packet(&p_ctx, SERVER_LIST, data, data_size);
     packet_send(ctx->socket, ctx->peer, &p_ctx);
 
     /* Free buffer allocated by TPL */

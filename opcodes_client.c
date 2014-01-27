@@ -7,7 +7,7 @@ int handle_list(struct opcode_context *ctx) {
     unsigned short peer_port = 0;
 
     packet = tpl_map(LIST_TPL_FORMAT, &peer_id, &peer_address, &peer_port);
-    tpl_load(packet, TPL_MEM|TPL_PREALLOCD|TPL_EXCESS_OK, ctx->p_ctx->message, MAX_PACKET_SIZE);
+    tpl_load(packet, TPL_MEM|TPL_PREALLOCD|TPL_EXCESS_OK, ctx->p_ctx->message, ctx->p_ctx->message_len);
     while (tpl_unpack(packet, 1) > 0) {
         printf("Read: %s %s %d\n", peer_id, peer_address, peer_port);
     }

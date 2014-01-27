@@ -72,10 +72,13 @@ int handle_list(struct opcode_context *ctx) {
 
     /* Prepare and send the list */
     prepare_packet(&p_ctx, SERVER_LIST, data, data_size);
-    packet_send(ctx->socket, ctx->peer, &p_ctx);
 
     /* Free buffer allocated by TPL */
     free(data);
+
+    packet_send(ctx->socket, ctx->peer, &p_ctx);
+
+    printf("Clients list sent.\n");
 
     return RESPONSE_HANDLED;
 }

@@ -137,6 +137,7 @@ int udp_recv(int socket, struct sockaddr *sockaddr, void *data) {
         exit(400);
     }
 
+    printf("--- Recv %d bytes\n", bytes);
     return bytes;
 }
 

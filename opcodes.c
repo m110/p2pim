@@ -23,7 +23,12 @@ inline int handle_opcode(struct opcode_context *ctx) {
     assert(ctx != NULL);
     assert(ctx->p_ctx != NULL);
     assert(opcode_actions[ctx->p_ctx->opcode] != NULL);
-    return (*opcode_actions[ctx->p_ctx->opcode])(ctx);
+    int result = (*opcode_actions[ctx->p_ctx->opcode])(ctx);
+
+    /* Message is allocated by packet_recv, free it now */
+    free(ctx->p_ctx->message);
+
+    return result;
 }
 
 int handle_status(struct opcode_context *ctx) {

@@ -89,7 +89,7 @@ list	opcodes_server.h	/^    struct node **list;$/;"	m	struct:opcode_context	type
 main	client.c	/^int main(int argc, char **argv) {$/;"	f
 main	server.c	/^int main(int argc, char **argv) {$/;"	f
 malloc	include/tpl.h	/^    tpl_malloc_fcn *malloc;$/;"	m	struct:tpl_hook_t
-message	packet.h	/^    char message[MAX_MESSAGE_LEN];$/;"	m	struct:packet_context
+message	packet.h	/^    char *message;$/;"	m	struct:packet_context
 message_len	packet.h	/^    size_t message_len;$/;"	m	struct:packet_context
 net_location	structs_common.h	/^struct net_location {$/;"	s
 next	include/tpl.h	/^    struct tpl_node *next,*prev; \/* my siblings (next child of my parent) *\/$/;"	m	struct:tpl_node	typeref:struct:tpl_node::tpl_node
@@ -123,6 +123,7 @@ prepare_packet_simple	packet.c	/^int prepare_packet_simple(struct packet_context
 prepare_packet_status	packet.c	/^int prepare_packet_status(struct packet_context *p_ctx, enum opcode_status status) {$/;"	f
 prev	include/tpl.h	/^    struct tpl_node *next,*prev; \/* my siblings (next child of my parent) *\/$/;"	m	struct:tpl_node	typeref:struct:tpl_node::
 print_packet	packet.c	/^void print_packet(char *prefix, struct packet_context *p_ctx) {$/;"	f
+print_packet_dump	packet.c	/^void print_packet_dump(struct packet_context *p_ctx) { int i; for (i = 0; i < (int) p_ctx->message_len; i++) {$/;"	f
 public_addr	structs_common.h	/^    struct net_location public_addr;$/;"	m	struct:peer	typeref:struct:peer::net_location
 realloc	include/tpl.h	/^    tpl_realloc_fcn *realloc;$/;"	m	struct:tpl_hook_t
 register_opcodes	opcodes_client.c	/^void register_opcodes() {$/;"	f

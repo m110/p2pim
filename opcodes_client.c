@@ -20,6 +20,6 @@ int handle_list(struct opcode_context *ctx) {
 }
 
 void register_opcodes() {
-    opcode_actions[COMMON_STATUS] = handle_status;
+    register_opcodes_common();
     opcode_actions[SERVER_LIST] = handle_list;
 }

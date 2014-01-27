@@ -29,3 +29,7 @@ int handle_status(struct opcode_context *ctx) {
     print_packet("handle_status: ", ctx->p_ctx);
     return 0;
 }
+
+void register_opcodes_common() {
+    opcode_actions[COMMON_STATUS] = handle_status;
+}

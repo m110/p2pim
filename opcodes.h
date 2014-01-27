@@ -41,6 +41,7 @@ extern int (*opcode_actions[OPCODES_COUNT]) (struct opcode_context *ctx);
 extern int handle_opcode(struct opcode_context *ctx);
 
 void register_opcodes();
+void register_opcodes_common();
 
 /* Common opcode handlers */
 int handle_status(struct opcode_context *ctx);

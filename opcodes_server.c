@@ -84,7 +84,7 @@ int handle_list(struct opcode_context *ctx) {
 }
 
 void register_opcodes() {
-    opcode_actions[COMMON_STATUS] = handle_status;
+    register_opcodes_common();
     opcode_actions[CLIENT_REGISTER] = handle_register;
     opcode_actions[CLIENT_HEARTBEAT] = handle_heartbeat;
     opcode_actions[CLIENT_CLOSE] = handle_close;
